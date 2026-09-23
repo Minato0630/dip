@@ -3,36 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MATLAB Image Processing Lab</title>
+    <title>MATLAB Image Processing Lab - Programs 5, 6, 7, 8</title>
     
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="MATLAB programs for image processing including image enhancement, histogram processing, image restoration, and image filtering.">
-    
-    <!-- Google Fonts -->
+    <!-- Meta tags -->
+    <meta name="description" content="Digital Image Processing MATLAB Programs: Edge Detection, Image Compression, Image Subtraction, and Morphological Boundary Extraction.">
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
     
-    <!-- Prism.js for syntax highlighting -->
+    <!-- Prism.js for MATLAB syntax highlighting -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
-    
+
     <style>
         :root {
-            /* Premium Dark Theme */
-            --bg-color: #0b0f19;
-            --surface-color: #151b2b;
-            --surface-highlight: #1e2638;
-            --text-primary: #f1f5f9;
+            /* MATLAB Dark Theme Palette */
+            --matlab-bg: #11141d;
+            --matlab-sidebar: #171b26;
+            --matlab-card: #1c2130;
+            --matlab-card-hover: #22283a;
+            --matlab-border: #2a3346;
+            --matlab-border-light: #37435b;
+            
+            --matlab-orange: #d9531e;
+            --matlab-orange-hover: #ea5e28;
+            --matlab-blue: #0284c7;
+            --matlab-blue-light: #38bdf8;
+            --matlab-green: #10b981;
+            --matlab-green-hover: #059669;
+            
+            --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
-            --accent-primary: #3b82f6; /* Blue */
-            --accent-secondary: #8b5cf6; /* Purple */
-            --success-color: #10b981; /* Emerald */
-            --border-color: #2a344a;
+            --text-muted: #64748b;
             
-            --font-main: 'Inter', sans-serif;
-            --font-code: 'Fira Code', monospace;
-            
-            --transition-speed: 0.3s;
+            --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-code: 'Fira Code', Consolas, Monaco, monospace;
         }
 
         * {
@@ -42,855 +48,1261 @@
         }
 
         body {
-            background-color: var(--bg-color);
+            background-color: var(--matlab-bg);
             color: var(--text-primary);
-            font-family: var(--font-main);
-            line-height: 1.7;
+            font-family: var(--font-ui);
+            line-height: 1.6;
             display: flex;
+            flex-direction: column;
             min-height: 100vh;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* ----- Sidebar Styles ----- */
-        .sidebar {
-            width: 320px;
-            background-color: var(--surface-color);
-            border-right: 1px solid var(--border-color);
-            padding: 2.5rem 1.5rem;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-            z-index: 100;
+        /* ----- MATLAB Top App Header & Toolstrip ----- */
+        .matlab-header {
+            background-color: #141722;
+            border-bottom: 1px solid var(--matlab-border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
-        .brand {
-            margin-bottom: 3rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .brand h1 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -0.5px;
-        }
-        
-        .brand p {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
-        }
-
-        .nav-list {
-            list-style: none;
-        }
-
-        .nav-item {
-            margin-bottom: 0.75rem;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            padding: 1rem 1.25rem;
-            color: var(--text-secondary);
-            text-decoration: none;
-            border-radius: 12px;
-            transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
-            font-weight: 500;
-            font-size: 0.95rem;
-            border: 1px solid transparent;
-        }
-
-        .nav-link:hover {
-            background-color: var(--surface-highlight);
-            color: var(--text-primary);
-            transform: translateX(4px);
-        }
-
-        .nav-link.active {
-            background: linear-gradient(to right, rgba(59, 130, 246, 0.1), transparent);
-            color: var(--accent-primary);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-left: 3px solid var(--accent-primary);
-        }
-
-        .nav-number {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 24px;
-            height: 24px;
-            background-color: rgba(148, 163, 184, 0.1);
-            border-radius: 6px;
-            margin-right: 12px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: inherit;
-        }
-
-        /* ----- Main Content Styles ----- */
-        .main-content {
-            margin-left: 320px;
-            padding: 4rem 5rem;
-            width: calc(100% - 320px);
-            max-width: 1200px;
-        }
-
-        .program-section {
-            display: none;
-            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        .program-section.active {
-            display: block;
-        }
-
-        @keyframes slideUp {
-            to { 
-                opacity: 1; 
-                transform: translateY(0); 
-            }
-        }
-
-        .program-header {
-            margin-bottom: 3rem;
-        }
-
-        .program-subtitle {
-            color: var(--accent-primary);
-            font-weight: 600;
-            font-size: 0.875rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            margin-bottom: 0.75rem;
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            background-color: rgba(59, 130, 246, 0.1);
-            border-radius: 20px;
-        }
-
-        .program-title {
-            font-size: 2.75rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            line-height: 1.2;
-            letter-spacing: -1px;
-        }
-
-        .card {
-            background-color: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 2.5rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            border-color: rgba(59, 130, 246, 0.3);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .icon-box {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            color: white;
-        }
-
-        .card-title {
-            font-size: 1.35rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .card-content {
-            color: var(--text-secondary);
-            font-size: 1.05rem;
-        }
-
-        .procedure-list {
-            list-style-type: none;
-            counter-reset: custom-counter;
-        }
-
-        .procedure-list li {
-            position: relative;
-            margin-bottom: 1rem;
-            padding-left: 2.5rem;
-            counter-increment: custom-counter;
-        }
-
-        .procedure-list li::before {
-            content: counter(custom-counter);
-            position: absolute;
-            left: 0;
-            top: 2px;
-            width: 24px;
-            height: 24px;
-            background-color: rgba(139, 92, 246, 0.15);
-            color: var(--accent-secondary);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .code-container {
-            border-radius: 12px;
-            overflow: hidden;
-            margin-top: 1rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-            border: 1px solid var(--border-color);
-        }
-
-        .code-header {
-            background-color: #1a202c;
-            padding: 0.75rem 1.25rem;
+        .matlab-titlebar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid var(--border-color);
+            padding: 0.65rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
-        
-        .mac-controls {
-            display: flex;
-            gap: 6px;
-        }
-        
-        .mac-btn {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-        
-        .mac-close { background-color: #ff5f56; }
-        .mac-min { background-color: #ffbd2e; }
-        .mac-max { background-color: #27c93f; }
 
-        .code-lang {
+        .matlab-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .matlab-logo {
+            width: 26px;
+            height: 26px;
+            background: linear-gradient(135deg, #d9531e, #b83a0a);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 900;
+            font-size: 0.85rem;
+            box-shadow: 0 2px 6px rgba(217, 83, 30, 0.4);
             font-family: var(--font-code);
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
         }
 
-        .code-lang-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .copy-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text-secondary);
-            border-radius: 6px;
-            padding: 0.35rem 0.6rem;
-            font-size: 0.75rem;
-            font-family: var(--font-main);
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            transition: all var(--transition-speed) ease;
-        }
-
-        .copy-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
+        .matlab-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: -0.2px;
             color: var(--text-primary);
         }
 
-        .copy-btn.copied {
-            background: rgba(16, 185, 129, 0.15);
-            border-color: rgba(16, 185, 129, 0.3);
-            color: #34d399;
+        .matlab-version-tag {
+            background: rgba(56, 189, 248, 0.12);
+            color: var(--matlab-blue-light);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-family: var(--font-code);
         }
 
-        /* Override Prism Styles */
+        .matlab-env-path {
+            font-family: var(--font-code);
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            background: rgba(0,0,0,0.3);
+            padding: 3px 10px;
+            border-radius: 4px;
+            border: 1px solid var(--matlab-border);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Toolstrip Ribbon */
+        .matlab-ribbon {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1.5rem;
+            background: #191e2b;
+            overflow-x: auto;
+        }
+
+        .ribbon-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            font-weight: 500;
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            font-family: var(--font-ui);
+        }
+
+        .ribbon-btn:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-primary);
+        }
+
+        .ribbon-btn.run-btn {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            font-weight: 600;
+        }
+
+        .ribbon-btn.run-btn:hover {
+            background: rgba(16, 185, 129, 0.25);
+            color: #10b981;
+        }
+
+        .ribbon-separator {
+            width: 1px;
+            height: 18px;
+            background-color: var(--matlab-border);
+            margin: 0 4px;
+        }
+
+        /* ----- Main Layout ----- */
+        .app-container {
+            display: flex;
+            flex: 1;
+        }
+
+        /* ----- MATLAB Sidebar (Current Folder / File Browser) ----- */
+        .matlab-sidebar {
+            width: 290px;
+            background-color: var(--matlab-sidebar);
+            border-right: 1px solid var(--matlab-border);
+            padding: 1.25rem 0;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            min-height: calc(100vh - 80px);
+        }
+
+        .sidebar-section-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            padding: 0 1.25rem 0.65rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .file-list {
+            list-style: none;
+            padding: 0 0.5rem;
+        }
+
+        .file-item {
+            margin-bottom: 3px;
+        }
+
+        .file-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.65rem 0.85rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            transition: all 0.15s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .file-link:hover {
+            background-color: rgba(255, 255, 255, 0.04);
+            color: var(--text-primary);
+        }
+
+        .file-link.active {
+            background-color: rgba(56, 189, 248, 0.1);
+            color: var(--matlab-blue-light);
+            border-left-color: var(--matlab-blue-light);
+            font-weight: 600;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .m-icon {
+            background-color: #273145;
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-family: var(--font-code);
+        }
+
+        .file-link.active .m-icon {
+            background-color: var(--matlab-blue);
+            color: #fff;
+            border-color: var(--matlab-blue);
+        }
+
+        .quick-copy-sidebar {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 4px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: 0.2s;
+        }
+
+        .file-link:hover .quick-copy-sidebar,
+        .quick-copy-sidebar:hover {
+            opacity: 1;
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* ----- Main Editor Area ----- */
+        .editor-workspace {
+            flex: 1;
+            padding: 2rem 3rem;
+            max-width: 1100px;
+            overflow-y: auto;
+        }
+
+        .program-container {
+            display: none;
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        .program-container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Program Header Banner */
+        .program-header-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid var(--matlab-border);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .program-title-group h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .program-badge {
+            background: #232c3f;
+            color: var(--matlab-orange);
+            border: 1px solid rgba(217, 83, 30, 0.4);
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-family: var(--font-code);
+        }
+
+        .program-meta {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 0.35rem;
+        }
+
+        /* Top Action Buttons */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 0.6rem 1.15rem;
+            border-radius: 6px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+            font-family: var(--font-ui);
+        }
+
+        .action-btn.copy-master {
+            background-color: #273145;
+            color: #f1f5f9;
+            border: 1px solid var(--matlab-border-light);
+        }
+
+        .action-btn.copy-master:hover {
+            background-color: #323f58;
+            border-color: #49597a;
+            transform: translateY(-1px);
+        }
+
+        .action-btn.run-master {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+        }
+
+        .action-btn.run-master:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-1px);
+        }
+
+        /* Content Section Cards */
+        .matlab-card {
+            background-color: var(--matlab-card);
+            border: 1px solid var(--matlab-border);
+            border-radius: 10px;
+            padding: 1.75rem 2rem;
+            margin-bottom: 1.75rem;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+            transition: border-color 0.2s ease;
+        }
+
+        .matlab-card:hover {
+            border-color: var(--matlab-border-light);
+        }
+
+        .card-heading {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--matlab-blue-light);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-heading-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 6px;
+            color: var(--matlab-blue-light);
+            font-size: 0.9rem;
+        }
+
+        .card-text {
+            color: #cbd5e1;
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        /* Procedure List */
+        .procedure-steps {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+
+        .procedure-steps li {
+            position: relative;
+            padding-left: 2.5rem;
+            margin-bottom: 0.85rem;
+            color: #cbd5e1;
+            font-size: 0.98rem;
+            counter-increment: step-counter;
+        }
+
+        .procedure-steps li:last-child {
+            margin-bottom: 0;
+        }
+
+        .procedure-steps li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 2px;
+            width: 22px;
+            height: 22px;
+            background-color: rgba(217, 83, 30, 0.15);
+            color: var(--matlab-orange);
+            border: 1px solid rgba(217, 83, 30, 0.35);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            font-family: var(--font-code);
+        }
+
+        /* MATLAB Code Window Component */
+        .code-window {
+            border: 1px solid var(--matlab-border);
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #0f131c;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+            margin-top: 0.5rem;
+        }
+
+        .code-window-bar {
+            background-color: #161b26;
+            border-bottom: 1px solid var(--matlab-border);
+            padding: 0.55rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .editor-tab {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #0f131c;
+            border: 1px solid var(--matlab-border);
+            border-bottom: none;
+            padding: 5px 12px;
+            border-radius: 5px 5px 0 0;
+            font-family: var(--font-code);
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .code-copy-btn {
+            background-color: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            font-family: var(--font-ui);
+            font-weight: 600;
+            padding: 0.38rem 0.85rem;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .code-copy-btn:hover {
+            background-color: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .code-copy-btn.copied {
+            background-color: rgba(16, 185, 129, 0.2) !important;
+            border-color: rgba(16, 185, 129, 0.4) !important;
+            color: #34d399 !important;
+        }
+
+        /* Prism Code Block Overrides */
         pre[class*="language-"] {
             margin: 0 !important;
-            border-radius: 0 !important;
-            background-color: #0d1117 !important;
             padding: 1.5rem !important;
-            font-size: 0.95rem;
-            line-height: 1.6;
+            background: #0f131c !important;
+            font-family: var(--font-code) !important;
+            font-size: 0.92rem !important;
+            line-height: 1.7 !important;
+            border-radius: 0 !important;
         }
 
-        .result-box {
+        code[class*="language-"] {
+            font-family: var(--font-code) !important;
+        }
+
+        /* Result Section */
+        .result-card-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .result-content {
             display: flex;
             align-items: flex-start;
-            gap: 1.25rem;
-            padding: 1.5rem;
-            background: linear-gradient(to right, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.02));
-            border-left: 4px solid var(--success-color);
-            border-radius: 0 12px 12px 0;
-            color: #d1fae5;
+            gap: 1rem;
+            flex: 1;
         }
 
-        .result-icon {
-            color: var(--success-color);
-            font-size: 1.5rem;
-            line-height: 1;
+        .result-check {
+            width: 32px;
+            height: 32px;
+            background-color: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            color: var(--matlab-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+            margin-top: 2px;
         }
 
-        /* ----- Responsive Design ----- */
-        @media (max-width: 1024px) {
-            .sidebar {
-                width: 260px;
-                padding: 2rem 1rem;
-            }
-            .main-content {
-                margin-left: 260px;
-                width: calc(100% - 260px);
-                padding: 3rem;
-            }
+        /* Live Preview Button */
+        .run-live-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            border: none;
+            padding: 0.65rem 1.25rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+            font-family: var(--font-ui);
+            flex-shrink: 0;
         }
 
-        @media (max-width: 768px) {
-            body {
+        .run-live-btn:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .app-container {
                 flex-direction: column;
             }
-            .sidebar {
+            .matlab-sidebar {
                 width: 100%;
-                height: auto;
-                position: relative;
-                padding: 1.5rem;
-                display: flex;
-                flex-direction: column;
+                min-height: auto;
                 border-right: none;
-                border-bottom: 1px solid var(--border-color);
+                border-bottom: 1px solid var(--matlab-border);
+                padding: 1rem 0.5rem;
             }
-            .brand {
-                margin-bottom: 1.5rem;
-                padding-bottom: 1.5rem;
-            }
-            .nav-list {
+            .file-list {
                 display: flex;
                 overflow-x: auto;
-                gap: 1rem;
+                gap: 0.5rem;
                 padding-bottom: 0.5rem;
             }
-            .nav-item {
-                margin-bottom: 0;
+            .file-item {
                 flex-shrink: 0;
             }
-            .nav-link {
-                padding: 0.75rem 1rem;
+            .editor-workspace {
+                padding: 1.5rem 1rem;
             }
-            .main-content {
-                margin-left: 0;
-                width: 100%;
-                padding: 2rem 1.5rem;
-            }
-            .program-title {
-                font-size: 2rem;
-            }
-            .card {
-                padding: 1.5rem;
+            .matlab-env-path {
+                display: none;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- Sidebar Navigation -->
-    <nav class="sidebar">
-        <div class="brand">
-            <h1>MATLAB Programs</h1>
-            <p>Digital Image Processing Lab</p>
+    <!-- MATLAB App Header -->
+    <header class="matlab-header">
+        <div class="matlab-titlebar">
+            <div class="matlab-brand">
+                <div class="matlab-logo">M</div>
+                <div class="matlab-title">MATLAB Online — Digital Image Processing Lab</div>
+                <span class="matlab-version-tag">R2024b</span>
+            </div>
+            <div class="matlab-env-path">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                Current Directory: /DIP_Lab/Programs_5_8/
+            </div>
         </div>
-        <ul class="nav-list">
-            <li class="nav-item">
-                <a href="#program1" class="nav-link active" data-target="program1">
-                    <span class="nav-number">1</span>
-                    Image Enhancement
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="#program2" class="nav-link" data-target="program2">
-                    <span class="nav-number">2</span>
-                    Histogram Processing
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="#program3" class="nav-link" data-target="program3">
-                    <span class="nav-number">3</span>
-                    Image Restoration
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="#program4" class="nav-link" data-target="program4">
-                    <span class="nav-number">4</span>
-                    Image Filtering
-                </a>
-            </li>
-        </ul>
-    </nav>
+        
+        <!-- MATLAB Ribbon / Toolstrip -->
+        <div class="matlab-ribbon">
+            <button class="ribbon-btn run-btn" id="ribbon-run-btn" title="Run Current Program">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                Run Program
+            </button>
+            <button class="ribbon-btn" id="ribbon-copy-btn" title="Copy Current Script">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy Script
+            </button>
+            <div class="ribbon-separator"></div>
+            <button class="ribbon-btn" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                Top
+            </button>
+            <button class="ribbon-btn" onclick="document.querySelector('.program-container.active .code-window').scrollIntoView({behavior:'smooth'})">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                Jump to Code
+            </button>
+        </div>
+    </header>
 
-    <!-- Main Content Area -->
-    <main class="main-content">
-
-        <!-- ==================== PROGRAM 1 ==================== -->
-        <section id="program1" class="program-section active">
-            <div class="program-header">
-                <span class="program-subtitle">Program 01</span>
-                <h2 class="program-title">Image Enhancement</h2>
+    <div class="app-container">
+        <!-- Sidebar: Current Folder Navigation -->
+        <aside class="matlab-sidebar">
+            <div class="sidebar-section-title">
+                <span>Current Folder</span>
+                <span style="font-size:0.65rem; color:#38bdf8;">4 M-FILES</span>
             </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <div class="icon-box">🎯</div>
-                    <h3 class="card-title">Aim</h3>
-                </div>
-                <div class="card-content">
-                    To implement image enhancement techniques such as smoothing, sharpening, contrast stretching, gamma correction and sigmoidal enhancement using MATLAB.
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <div class="icon-box">📋</div>
-                    <h3 class="card-title">Procedure</h3>
-                </div>
-                <div class="card-content">
-                    <ul class="procedure-list">
-                        <li>Read the input image.</li>
-                        <li>Apply smoothing and sharpening.</li>
-                        <li>Perform contrast stretching, gamma correction and sigmoidal enhancement.</li>
-                        <li>Display and compare all enhanced images.</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <div class="icon-box">💻</div>
-                    <h3 class="card-title">MATLAB Program</h3>
-                </div>
-                <div class="code-container">
-                    <div class="code-header">
-                        <div class="mac-controls">
-                            <div class="mac-btn mac-close"></div>
-                            <div class="mac-btn mac-min"></div>
-                            <div class="mac-btn mac-max"></div>
+            <ul class="file-list">
+                <li class="file-item">
+                    <a href="#pg5" class="file-link active" data-target="pg5">
+                        <div class="file-info">
+                            <span class="m-icon">.m</span>
+                            <span>PG5.m - Edge Detection</span>
                         </div>
-                        <div class="code-lang-wrapper">
-                            <span class="code-lang">matlab</span>
-                            <button class="copy-btn" aria-label="Copy code">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                <span>Copy</span>
-                            </button>
+                        <button class="quick-copy-sidebar" data-program="5" title="Copy PG5.m">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        </button>
+                    </a>
+                </li>
+                <li class="file-item">
+                    <a href="#pg6" class="file-link" data-target="pg6">
+                        <div class="file-info">
+                            <span class="m-icon">.m</span>
+                            <span>PG6.m - Compression</span>
+                        </div>
+                        <button class="quick-copy-sidebar" data-program="6" title="Copy PG6.m">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        </button>
+                    </a>
+                </li>
+                <li class="file-item">
+                    <a href="#pg7" class="file-link" data-target="pg7">
+                        <div class="file-info">
+                            <span class="m-icon">.m</span>
+                            <span>PG7.m - Subtraction</span>
+                        </div>
+                        <button class="quick-copy-sidebar" data-program="7" title="Copy PG7.m">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        </button>
+                    </a>
+                </li>
+                <li class="file-item">
+                    <a href="#pg8" class="file-link" data-target="pg8">
+                        <div class="file-info">
+                            <span class="m-icon">.m</span>
+                            <span>PG8.m - Boundary Extr.</span>
+                        </div>
+                        <button class="quick-copy-sidebar" data-program="8" title="Copy PG8.m">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        </button>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="editor-workspace">
+
+            <!-- ==================== PROGRAM 5 ==================== -->
+            <section id="pg5" class="program-container active">
+                <div class="program-header-banner">
+                    <div class="program-title-group">
+                        <h1>
+                            <span>Edge Detection Operators</span>
+                            <span class="program-badge">PG5.m</span>
+                        </h1>
+                        <p class="program-meta">Program 5 &bull; Sobel, Prewitt, Roberts, and Canny Edge Detectors</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="action-btn copy-master copy-code-btn" data-target-code="code-pg5" title="Copy entire MATLAB script">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            <span>Copy Code</span>
+                        </button>
+                        <button class="action-btn run-master run-live-btn" data-program="5" title="Simulate MATLAB execution">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            <span>Run Figure</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Aim -->
+                <div class="matlab-card">
+                    <div class="card-heading">
+                        <span class="card-heading-icon">🎯</span>
+                        <span>Aim</span>
+                    </div>
+                    <p class="card-text">
+                        To implement and compare different image edge detection techniques including <strong>Sobel</strong>, <strong>Prewitt</strong>, <strong>Roberts</strong>, and <strong>Canny</strong> operators using MATLAB.
+                    </p>
+                </div>
+
+                <!-- Procedure -->
+                <div class="matlab-card">
+                    <div class="card-heading">
+                        <span class="card-heading-icon">📋</span>
+                        <span>Procedure</span>
+                    </div>
+                    <ol class="procedure-steps">
+                        <li>Read the input image (<code>'LENA.JFIF'</code>) using <code>imread()</code>.</li>
+                        <li>Check if the image is in RGB format; if so, convert it to grayscale using <code>rgb2gray()</code>.</li>
+                        <li>Apply edge detection operators using MATLAB's built-in <code>edge()</code> function for Sobel, Prewitt, Roberts, and Canny.</li>
+                        <li>Plot and display the original image and all four edge-detected images using <code>subplot()</code> and <code>imshow()</code>.</li>
+                    </ol>
+                </div>
+
+                <!-- MATLAB Program -->
+                <div class="matlab-card" style="padding-bottom: 1rem;">
+                    <div class="card-heading" style="justify-content: space-between;">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span class="card-heading-icon">💻</span>
+                            <span>MATLAB Program (PG5.m)</span>
                         </div>
                     </div>
-<pre><code class="language-matlab">clc;
+                    <div class="code-window">
+                        <div class="code-window-bar">
+                            <div class="editor-tab">
+                                <span style="color:#d9531e;">M</span>
+                                <span>PG5.m</span>
+                            </div>
+                            <button class="code-copy-btn copy-code-btn" data-target-code="code-pg5">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <span>Copy Code</span>
+                            </button>
+                        </div>
+<pre><code id="code-pg5" class="language-matlab">clc;
 clear;
 close all;
 
-img = imread('lena.png');
+% Read Image
+img = imread('LENA.JFIF');
 
-figure;
-
-% 1.1 Smoothing
-smooth = imfilter(img,fspecial('average',[3 3]));
-
-% 1.2 Sharpening
-sharp = imsharpen(img);
-
-% 1.3.1 Contrast Stretching
-contrast = imadjust(img,stretchlim(img),[]);
-
-% 1.3.2 Gamma Correction
-gamma = im2double(img).^0.7;
-
-% 1.3.3 Sigmoidal Function
-x = im2double(img);
-sigmoid = 1./(1+exp(5*(0.5-x)));
-
-subplot(2,3,1), imshow(img), title('Original');
-subplot(2,3,2), imshow(smooth), title('Smoothing');
-subplot(2,3,3), imshow(sharp), title('Sharpening');
-subplot(2,3,4), imshow(contrast), title('Contrast');
-subplot(2,3,5), imshow(gamma), title('Gamma');
-subplot(2,3,6), imshow(sigmoid), title('Sigmoid');</code></pre>
-                </div>
-            </div>
-
-            <div class="card" style="border: 1px solid var(--success-color); padding: 0; overflow: hidden;">
-                <div class="result-box">
-                    <div class="result-icon">✓</div>
-                    <div>
-                        <h4 style="font-size: 1.1rem; margin-bottom: 0.25rem; font-weight: 600; color: #34d399;">Result</h4>
-                        <p style="opacity: 0.9;">Thus, the image enhancement techniques were successfully implemented and the enhanced images were displayed.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ==================== PROGRAM 2 ==================== -->
-        <section id="program2" class="program-section">
-            <div class="program-header">
-                <span class="program-subtitle">Program 02</span>
-                <h2 class="program-title">Histogram Processing</h2>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <div class="icon-box">🎯</div>
-                    <h3 class="card-title">Aim</h3>
-                </div>
-                <div class="card-content">
-                    To implement histogram, histogram equalization and histogram specification techniques using MATLAB.
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <div class="icon-box">📋</div>
-                    <h3 class="card-title">Procedure</h3>
-                </div>
-                <div class="card-content">
-                    <ul class="procedure-list">
-                        <li>Read the input and reference images.</li>
-                        <li>Find and display the histogram.</li>
-                        <li>Perform histogram equalization.</li>
-                        <li>Perform histogram specification/matching.</li>
-                        <li>Display the results.</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <div class="icon-box">💻</div>
-                    <h3 class="card-title">MATLAB Program</h3>
-                </div>
-                <div class="code-container">
-                    <div class="code-header">
-                        <div class="mac-controls">
-                            <div class="mac-btn mac-close"></div>
-                            <div class="mac-btn mac-min"></div>
-                            <div class="mac-btn mac-max"></div>
-                        </div>
-                        <div class="code-lang-wrapper">
-                            <span class="code-lang">matlab</span>
-                            <button class="copy-btn" aria-label="Copy code">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                <span>Copy</span>
-                            </button>
-                        </div>
-                    </div>
-<pre><code class="language-matlab">clc;
-clear;
-close all;
-
-img = imread('lena.png');
-ref = imread('penquin.jpg');
-
-% Convert to grayscale
+% Convert to Gray
 if size(img,3)==3
     img = rgb2gray(img);
 end
-if size(ref,3)==3
-    ref = rgb2gray(ref);
+
+% Edge Detection
+sobel = edge(img,'sobel');
+prewitt = edge(img,'prewitt');
+roberts = edge(img,'roberts');
+canny = edge(img,'canny');
+
+% Display
+figure;
+subplot(2,3,1), imshow(img), title('Original');
+subplot(2,3,2), imshow(sobel), title('Sobel');
+subplot(2,3,3), imshow(prewitt), title('Prewitt');
+subplot(2,3,4), imshow(roberts), title('Roberts');
+subplot(2,3,5), imshow(canny), title('Canny');</code></pre>
+                    </div>
+                </div>
+
+                <!-- Result -->
+                <div class="matlab-card" style="border-left: 4px solid var(--matlab-green);">
+                    <div class="result-card-inner">
+                        <div class="result-content">
+                            <div class="result-check">✓</div>
+                            <div>
+                                <h4 style="color:#34d399; font-size:1.1rem; margin-bottom:0.25rem;">Result</h4>
+                                <p class="card-text" style="font-size:0.95rem;">
+                                    Thus, edge detection using Sobel, Prewitt, Roberts, and Canny operators was successfully implemented and the edges were displayed.
+                                </p>
+                            </div>
+                        </div>
+                        <button class="run-live-btn" data-program="5">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            <span>Live Simulation</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== PROGRAM 6 ==================== -->
+            <section id="pg6" class="program-container">
+                <div class="program-header-banner">
+                    <div class="program-title-group">
+                        <h1>
+                            <span>Image Compression & Ratio</span>
+                            <span class="program-badge">PG6.m</span>
+                        </h1>
+                        <p class="program-meta">Program 6 &bull; JPEG Quality Factor Adjustment & Compression Ratio Calculation</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="action-btn copy-master copy-code-btn" data-target-code="code-pg6" title="Copy entire MATLAB script">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            <span>Copy Code</span>
+                        </button>
+                        <button class="action-btn run-master run-live-btn" data-program="6" title="Simulate MATLAB execution">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            <span>Run Figure</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Aim -->
+                <div class="matlab-card">
+                    <div class="card-heading">
+                        <span class="card-heading-icon">🎯</span>
+                        <span>Aim</span>
+                    </div>
+                    <p class="card-text">
+                        To perform JPEG image compression by specifying the quality factor in MATLAB and calculate the resulting <strong>compression ratio</strong>.
+                    </p>
+                </div>
+
+                <!-- Procedure -->
+                <div class="matlab-card">
+                    <div class="card-heading">
+                        <span class="card-heading-icon">📋</span>
+                        <span>Procedure</span>
+                    </div>
+                    <ol class="procedure-steps">
+                        <li>Read the source image (<code>'LENA.JFIF'</code>) and convert to grayscale if RGB.</li>
+                        <li>Write the image to a file (<code>'compressed.jpg'</code>) with reduced quality (Quality = 30) using <code>imwrite()</code>.</li>
+                        <li>Read the compressed JPEG image back using <code>imread()</code>.</li>
+                        <li>Display both original and compressed images side-by-side using <code>subplot()</code>.</li>
+                        <li>Query file attributes using <code>dir()</code> to extract file sizes in bytes and compute the compression ratio: <code>ratio = original.bytes / compressed.bytes</code>.</li>
+                    </ol>
+                </div>
+
+                <!-- MATLAB Program -->
+                <div class="matlab-card" style="padding-bottom: 1rem;">
+                    <div class="card-heading">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span class="card-heading-icon">💻</span>
+                            <span>MATLAB Program (PG6.m)</span>
+                        </div>
+                    </div>
+                    <div class="code-window">
+                        <div class="code-window-bar">
+                            <div class="editor-tab">
+                                <span style="color:#d9531e;">M</span>
+                                <span>PG6.m</span>
+                            </div>
+                            <button class="code-copy-btn copy-code-btn" data-target-code="code-pg6">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <span>Copy Code</span>
+                            </button>
+                        </div>
+<pre><code id="code-pg6" class="language-matlab">clc;
+clear;
+close all;
+
+% Read Image
+img = imread('LENA.JFIF');
+
+% Convert to Gray
+if size(img,3)==3
+    img = rgb2gray(img);
 end
 
-% 2.1 Histogram
-h = imhist(img);
+% Compress and Save
+imwrite(img,'compressed.jpg','Quality',30);
 
-% 2.2 Histogram Equalization
-equal = histeq(img);
+% Read Compressed Image
+comp = imread('compressed.jpg');
 
-% 2.3 Histogram Specification
-match = imhistmatch(img,ref);
-
+% Display
 figure;
+subplot(1,2,1), imshow(img), title('Original');
+subplot(1,2,2), imshow(comp), title('Compressed');
 
-subplot(2,3,1), imshow(img), title('Original');
-subplot(2,3,2), imhist(img), title('Histogram');
-subplot(2,3,3), imshow(equal), title('Equalized');
-subplot(2,3,4), imhist(equal), title('Equalized Histogram');
-subplot(2,3,5), imshow(match), title('Matched');
-subplot(2,3,6), imhist(match), title('Matched Histogram');</code></pre>
-                </div>
-            </div>
+% Compression Ratio
+o = dir('lena.png');
+c = dir('compressed.jpg');
+ratio = o.bytes / c.bytes;
 
-            <div class="card" style="border: 1px solid var(--success-color); padding: 0; overflow: hidden;">
-                <div class="result-box">
-                    <div class="result-icon">✓</div>
-                    <div>
-                        <h4 style="font-size: 1.1rem; margin-bottom: 0.25rem; font-weight: 600; color: #34d399;">Result</h4>
-                        <p style="opacity: 0.9;">Thus, histogram, histogram equalization and histogram specification were successfully implemented and the results were displayed.</p>
+fprintf('Compression Ratio = %.2f\n', ratio);</code></pre>
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <!-- ==================== PROGRAM 3 ==================== -->
-        <section id="program3" class="program-section">
-            <div class="program-header">
-                <span class="program-subtitle">Program 03</span>
-                <h2 class="program-title">Image Restoration</h2>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <div class="icon-box">🎯</div>
-                    <h3 class="card-title">Aim</h3>
-                </div>
-                <div class="card-content">
-                    To restore a degraded and noisy image using Wiener filtering in MATLAB.
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <div class="icon-box">📋</div>
-                    <h3 class="card-title">Procedure</h3>
-                </div>
-                <div class="card-content">
-                    <ul class="procedure-list">
-                        <li>Read the input image.</li>
-                        <li>Create a motion blur PSF.</li>
-                        <li>Add Gaussian noise to the degraded image.</li>
-                        <li>Calculate the noise-to-signal ratio.</li>
-                        <li>Apply Wiener filtering.</li>
-                        <li>Display the original, degraded and restored images.</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <div class="icon-box">💻</div>
-                    <h3 class="card-title">MATLAB Program</h3>
-                </div>
-                <div class="code-container">
-                    <div class="code-header">
-                        <div class="mac-controls">
-                            <div class="mac-btn mac-close"></div>
-                            <div class="mac-btn mac-min"></div>
-                            <div class="mac-btn mac-max"></div>
+                <!-- Result -->
+                <div class="matlab-card" style="border-left: 4px solid var(--matlab-green);">
+                    <div class="result-card-inner">
+                        <div class="result-content">
+                            <div class="result-check">✓</div>
+                            <div>
+                                <h4 style="color:#34d399; font-size:1.1rem; margin-bottom:0.25rem;">Result</h4>
+                                <p class="card-text" style="font-size:0.95rem;">
+                                    Thus, image compression was successfully performed, the images were compared, and the compression ratio was calculated.
+                                </p>
+                            </div>
                         </div>
-                        <div class="code-lang-wrapper">
-                            <span class="code-lang">matlab</span>
-                            <button class="copy-btn" aria-label="Copy code">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                <span>Copy</span>
+                        <button class="run-live-btn" data-program="6">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            <span>Live Simulation</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== PROGRAM 7 ==================== -->
+            <section id="pg7" class="program-container">
+                <div class="program-header-banner">
+                    <div class="program-title-group">
+                        <h1>
+                            <span>Image Subtraction</span>
+                            <span class="program-badge">PG7.m</span>
+                        </h1>
+                        <p class="program-meta">Program 7 &bull; Image Arithmetic & Absolute Difference (imabsdiff)</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="action-btn copy-master copy-code-btn" data-target-code="code-pg7" title="Copy entire MATLAB script">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            <span>Copy Code</span>
+                        </button>
+                        <button class="action-btn run-master run-live-btn" data-program="7" title="Simulate MATLAB execution">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            <span>Run Figure</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Aim -->
+                <div class="matlab-card">
+                    <div class="card-heading">
+                        <span class="card-heading-icon">🎯</span>
+                        <span>Aim</span>
+                    </div>
+                    <p class="card-text">
+                        To perform <strong>image subtraction</strong> using <code>imabsdiff()</code> between two images to detect differences and changes in MATLAB.
+                    </p>
+                </div>
+
+                <!-- Procedure -->
+                <div class="matlab-card">
+                    <div class="card-heading">
+                        <span class="card-heading-icon">📋</span>
+                        <span>Procedure</span>
+                    </div>
+                    <ol class="procedure-steps">
+                        <li>Read two input images (<code>'LENA.JFIF'</code> and <code>'image.JFIF'</code>).</li>
+                        <li>Convert both images to grayscale using <code>rgb2gray()</code> if they contain 3 color channels.</li>
+                        <li>Resize the second image to exactly match the dimensions of the first image using <code>imresize()</code>.</li>
+                        <li>Calculate the absolute difference between both images using <code>imabsdiff(img1, img2)</code>.</li>
+                        <li>Display Image 1, Image 2, and the resulting Subtracted Image using <code>subplot()</code>.</li>
+                    </ol>
+                </div>
+
+                <!-- MATLAB Program -->
+                <div class="matlab-card" style="padding-bottom: 1rem;">
+                    <div class="card-heading">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span class="card-heading-icon">💻</span>
+                            <span>MATLAB Program (PG7.m)</span>
+                        </div>
+                    </div>
+                    <div class="code-window">
+                        <div class="code-window-bar">
+                            <div class="editor-tab">
+                                <span style="color:#d9531e;">M</span>
+                                <span>PG7.m</span>
+                            </div>
+                            <button class="code-copy-btn copy-code-btn" data-target-code="code-pg7">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <span>Copy Code</span>
                             </button>
                         </div>
-                    </div>
-<pre><code class="language-matlab">clc;
+<pre><code id="code-pg7" class="language-matlab">clc;
 clear;
 close all;
 
-% Read image
-img = im2double(imread('penquin.jpg'));
+% Read Images
+img1 = imread('LENA.JFIF');
+img2 = imread('image.JFIF');
 
-% Motion blur
-psf = fspecial('motion',20,45);
-blur = imfilter(img,psf,'conv','circular');
+% Convert to Gray
+if size(img1,3)==3
+    img1 = rgb2gray(img1);
+end
 
-% Add Gaussian noise
-noise = imnoise(blur,'gaussian',0,0.001);
+if size(img2,3)==3
+    img2 = rgb2gray(img2);
+end
 
-% Wiener restoration
-nsr = 0.001/var(img(:));
-restored = deconvwnr(noise,psf,nsr);
+% Resize Images
+img2 = imresize(img2, size(img1));
+
+% Image Subtraction
+result = imabsdiff(img1, img2);
 
 % Display
+figure;
+subplot(1,3,1), imshow(img1), title('Image 1');
+subplot(1,3,2), imshow(img2), title('Image 2');
+subplot(1,3,3), imshow(result), title('Subtracted Image');</code></pre>
+                    </div>
+                </div>
+
+                <!-- Result -->
+                <div class="matlab-card" style="border-left: 4px solid var(--matlab-green);">
+                    <div class="result-card-inner">
+                        <div class="result-content">
+                            <div class="result-check">✓</div>
+                            <div>
+                                <h4 style="color:#34d399; font-size:1.1rem; margin-bottom:0.25rem;">Result</h4>
+                                <p class="card-text" style="font-size:0.95rem;">
+                                    Thus, image subtraction using <code>imabsdiff</code> was successfully performed and the subtracted image was displayed.
+                                </p>
+                            </div>
+                        </div>
+                        <button class="run-live-btn" data-program="7">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            <span>Live Simulation</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== PROGRAM 8 ==================== -->
+            <section id="pg8" class="program-container">
+                <div class="program-header-banner">
+                    <div class="program-title-group">
+                        <h1>
+                            <span>Boundary Extraction</span>
+                            <span class="program-badge">PG8.m</span>
+                        </h1>
+                        <p class="program-meta">Program 8 &bull; Morphological Operations (imerode & Subtraction)</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="action-btn copy-master copy-code-btn" data-target-code="code-pg8" title="Copy entire MATLAB script">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            <span>Copy Code</span>
+                        </button>
+                        <button class="action-btn run-master run-live-btn" data-program="8" title="Simulate MATLAB execution">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            <span>Run Figure</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Aim -->
+                <div class="matlab-card">
+                    <div class="card-heading">
+                        <span class="card-heading-icon">🎯</span>
+                        <span>Aim</span>
+                    </div>
+                    <p class="card-text">
+                        To extract morphological boundaries of an image using <strong>erosion</strong> and set subtraction in MATLAB.
+                    </p>
+                </div>
+
+                <!-- Procedure -->
+                <div class="matlab-card">
+                    <div class="card-heading">
+                        <span class="card-heading-icon">📋</span>
+                        <span>Procedure</span>
+                    </div>
+                    <ol class="procedure-steps">
+                        <li>Read the input image (<code>'LENA.JFIF'</code>) and convert it to grayscale.</li>
+                        <li>Binarize the grayscale image using <code>imbinarize()</code> to obtain binary image <code>bw</code>.</li>
+                        <li>Create a flat disk structuring element of radius 1 using <code>strel('disk', 1)</code>.</li>
+                        <li>Perform morphological erosion on the binary image using <code>imerode(bw, se)</code>.</li>
+                        <li>Compute the morphological boundary by subtracting the eroded image from the binary image: <code>boundary = bw - eroded</code>.</li>
+                        <li>Display the Original, Binary, and Boundary images in a 1x3 subplot grid.</li>
+                    </ol>
+                </div>
+
+                <!-- MATLAB Program -->
+                <div class="matlab-card" style="padding-bottom: 1rem;">
+                    <div class="card-heading">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span class="card-heading-icon">💻</span>
+                            <span>MATLAB Program (PG8.m)</span>
+                        </div>
+                    </div>
+                    <div class="code-window">
+                        <div class="code-window-bar">
+                            <div class="editor-tab">
+                                <span style="color:#d9531e;">M</span>
+                                <span>PG8.m</span>
+                            </div>
+                            <button class="code-copy-btn copy-code-btn" data-target-code="code-pg8">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <span>Copy Code</span>
+                            </button>
+                        </div>
+<pre><code id="code-pg8" class="language-matlab">clc;
+clear;
+close all;
+
+% Read Image
+img = imread('LENA.JFIF');
+
+% Convert to Gray
+if size(img,3)==3
+    img = rgb2gray(img);
+end
+
+% Convert to Binary
+bw = imbinarize(img);
+
+% Morphological Boundary Extraction
+se = strel('disk',1);
+eroded = imerode(bw,se);
+boundary = bw - eroded;
+
+% Display
+figure;
 subplot(1,3,1), imshow(img), title('Original');
-subplot(1,3,2), imshow(noise), title('Degraded + Noise');
-subplot(1,3,3), imshow(restored), title('Restored');</code></pre>
-                </div>
-            </div>
-
-            <div class="card" style="border: 1px solid var(--success-color); padding: 0; overflow: hidden;">
-                <div class="result-box">
-                    <div class="result-icon">✓</div>
-                    <div>
-                        <h4 style="font-size: 1.1rem; margin-bottom: 0.25rem; font-weight: 600; color: #34d399;">Result</h4>
-                        <p style="opacity: 0.9;">Thus, the degraded and noisy image was successfully restored using the Wiener filter.</p>
+subplot(1,3,2), imshow(bw), title('Binary');
+subplot(1,3,3), imshow(boundary), title('Boundary');</code></pre>
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <!-- ==================== PROGRAM 4 ==================== -->
-        <section id="program4" class="program-section">
-            <div class="program-header">
-                <span class="program-subtitle">Program 04</span>
-                <h2 class="program-title">Image Filtering</h2>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <div class="icon-box">🎯</div>
-                    <h3 class="card-title">Aim</h3>
-                </div>
-                <div class="card-content">
-                    To implement different image filtering techniques such as Low-pass, High-pass, Median, Sharpening and Gaussian filtering using MATLAB.
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <div class="icon-box">📋</div>
-                    <h3 class="card-title">Procedure</h3>
-                </div>
-                <div class="card-content">
-                    <ul class="procedure-list">
-                        <li>Read the input RGB image.</li>
-                        <li>Apply Low-pass and High-pass filters.</li>
-                        <li>Apply Median and Sharpening filters.</li>
-                        <li>Apply Gaussian filtering.</li>
-                        <li>Display and compare all filtered images.</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <div class="icon-box">💻</div>
-                    <h3 class="card-title">MATLAB Program</h3>
-                </div>
-                <div class="code-container">
-                    <div class="code-header">
-                        <div class="mac-controls">
-                            <div class="mac-btn mac-close"></div>
-                            <div class="mac-btn mac-min"></div>
-                            <div class="mac-btn mac-max"></div>
+                <!-- Result -->
+                <div class="matlab-card" style="border-left: 4px solid var(--matlab-green);">
+                    <div class="result-card-inner">
+                        <div class="result-content">
+                            <div class="result-check">✓</div>
+                            <div>
+                                <h4 style="color:#34d399; font-size:1.1rem; margin-bottom:0.25rem;">Result</h4>
+                                <p class="card-text" style="font-size:0.95rem;">
+                                    Thus, morphological boundary extraction was successfully performed using erosion and subtraction, and the boundary image was displayed.
+                                </p>
+                            </div>
                         </div>
-                        <div class="code-lang-wrapper">
-                            <span class="code-lang">matlab</span>
-                            <button class="copy-btn" aria-label="Copy code">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                <span>Copy</span>
-                            </button>
-                        </div>
-                    </div>
-<pre><code class="language-matlab">clc;
-clear;
-close all;
-
-% Read RGB image
-img = imread('lena.png');
-
-% Low-pass
-low = imfilter(img,fspecial('average',[3 3]));
-
-% High-pass
-high = imfilter(img,fspecial('sobel'));
-
-% Median filter
-med(:,:,1) = medfilt2(img(:,:,1));
-med(:,:,2) = medfilt2(img(:,:,2));
-med(:,:,3) = medfilt2(img(:,:,3));
-
-% Sharpen
-sharp = imsharpen(img);
-
-% Gaussian
-gauss = imgaussfilt(img,2);
-
-% Display
-subplot(2,3,1), imshow(img), title('Original');
-subplot(2,3,2), imshow(low), title('Low-pass');
-subplot(2,3,3), imshow(high,[]), title('High-pass');
-subplot(2,3,4), imshow(med), title('Median');
-subplot(2,3,5), imshow(sharp), title('Sharpen');
-subplot(2,3,6), imshow(gauss), title('Gaussian');</code></pre>
-                </div>
-            </div>
-
-            <div class="card" style="border: 1px solid var(--success-color); padding: 0; overflow: hidden;">
-                <div class="result-box">
-                    <div class="result-icon">✓</div>
-                    <div>
-                        <h4 style="font-size: 1.1rem; margin-bottom: 0.25rem; font-weight: 600; color: #34d399;">Result</h4>
-                        <p style="opacity: 0.9;">Thus, the different image filtering techniques were successfully implemented and the filtered images were displayed.</p>
+                        <button class="run-live-btn" data-program="8">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            <span>Live Simulation</span>
+                        </button>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-    </main>
+        </main>
+    </div>
 
     <!-- Prism.js for syntax highlighting -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-matlab.min.js"></script>
     
-    <!-- Navigation Logic -->
+    <!-- Navigation & Copy Logic -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const links = document.querySelectorAll('.nav-link');
-            const sections = document.querySelectorAll('.program-section');
+            // Tab switching logic
+            const navLinks = document.querySelectorAll('.file-link');
+            const sections = document.querySelectorAll('.program-container');
 
-            // Copy Code Functionality
-            const copyButtons = document.querySelectorAll('.copy-btn');
-            copyButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const codeBlock = btn.closest('.code-container').querySelector('code');
-                    const codeText = codeBlock.textContent;
-                    
-                    navigator.clipboard.writeText(codeText).then(() => {
-                        const originalText = btn.innerHTML;
-                        btn.classList.add('copied');
-                        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied!</span>`;
-                        
-                        setTimeout(() => {
-                            btn.classList.remove('copied');
-                            btn.innerHTML = originalText;
-                        }, 2000);
-                    });
+            function switchProgram(targetId) {
+                navLinks.forEach(link => {
+                    if (link.getAttribute('data-target') === targetId) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
                 });
-            });
 
-            links.forEach(link => {
+                sections.forEach(sec => {
+                    if (sec.id === targetId) {
+                        sec.classList.add('active');
+                    } else {
+                        sec.classList.remove('active');
+                    }
+                });
+            }
+
+            navLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
-                    
-                    // Remove active class from all links and sections
-                    links.forEach(l => l.classList.remove('active'));
-                    sections.forEach(s => s.classList.remove('active'));
-                    
-                    // Add active class to clicked link
-                    link.classList.add('active');
-                    
-                    // Show target section
                     const targetId = link.getAttribute('data-target');
-                    document.getElementById(targetId).classList.add('active');
-                    
-                    // Smooth scroll to top
-                    window.scrollTo({
-                        top: 0,
-                        behavior: 'smooth'
-                    });
+                    switchProgram(targetId);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                 });
             });
+
+            // Master Copy Function with clipboard API
+            function copyTextToClipboard(text, triggerBtn) {
+                navigator.clipboard.writeText(text).then(() => {
+                    const originalHTML = triggerBtn.innerHTML;
+                    triggerBtn.classList.add('copied');
+                    triggerBtn.innerHTML = `
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span>Copied!</span>
+                    `;
+                    setTimeout(() => {
+                        triggerBtn.classList.remove('copied');
+                        triggerBtn.innerHTML = originalHTML;
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+            }
+
+            // Copy buttons for code boxes and headers
+            document.querySelectorAll('.copy-code-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const codeId = btn.getAttribute('data-target-code');
+                    const codeElement = document.getElementById(codeId);
+                    if (codeElement) {
+                        copyTextToClipboard(codeElement.textContent, btn);
+                    }
+                });
+            });
+
+            // Quick copy buttons in sidebar
+            document.querySelectorAll('.quick-copy-sidebar').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const pNum = btn.getAttribute('data-program');
+                    const codeEl = document.getElementById('code-pg' + pNum);
+                    if (codeEl) {
+                        copyTextToClipboard(codeEl.textContent, btn);
+                    }
+                });
+            });
+
+            // Top ribbon buttons
+            const ribbonRunBtn = document.getElementById('ribbon-run-btn');
+            if (ribbonRunBtn) {
+                ribbonRunBtn.addEventListener('click', () => {
+                    const activeSec = document.querySelector('.program-container.active');
+                    if (activeSec) {
+                        const runBtn = activeSec.querySelector('.run-live-btn');
+                        if (runBtn) runBtn.click();
+                    }
+                });
+            }
+
+            const ribbonCopyBtn = document.getElementById('ribbon-copy-btn');
+            if (ribbonCopyBtn) {
+                ribbonCopyBtn.addEventListener('click', () => {
+                    const activeSec = document.querySelector('.program-container.active');
+                    if (activeSec) {
+                        const copyBtn = activeSec.querySelector('.copy-master');
+                        if (copyBtn) copyBtn.click();
+                    }
+                });
+            }
         });
     </script>
+    <!-- Live Canvas Simulation Engine -->
+    <script src="live-preview.js"></script>
 </body>
 </html>
