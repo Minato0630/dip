@@ -1,801 +1,1219 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MATLAB Image Processing Lab - Programs 5, 6, 7, 8</title>
-    
-    <!-- Meta tags -->
-    <meta name="description" content="Digital Image Processing MATLAB Programs: Edge Detection, Image Compression, Image Subtraction, and Morphological Boundary Extraction.">
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
-    
-    <!-- Prism.js for MATLAB syntax highlighting -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
-
-    <style>
-        :root {
-            /* MATLAB Dark Theme Palette */
-            --matlab-bg: #11141d;
-            --matlab-sidebar: #171b26;
-            --matlab-card: #1c2130;
-            --matlab-card-hover: #22283a;
-            --matlab-border: #2a3346;
-            --matlab-border-light: #37435b;
-            
-            --matlab-orange: #d9531e;
-            --matlab-orange-hover: #ea5e28;
-            --matlab-blue: #0284c7;
-            --matlab-blue-light: #38bdf8;
-            --matlab-green: #10b981;
-            --matlab-green-hover: #059669;
-            
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            
-            --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            --font-code: 'Fira Code', Consolas, Monaco, monospace;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background-color: var(--matlab-bg);
-            color: var(--text-primary);
-            font-family: var(--font-ui);
-            line-height: 1.6;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* ----- MATLAB Top App Header & Toolstrip ----- */
-        .matlab-header {
-            background-color: #141722;
-            border-bottom: 1px solid var(--matlab-border);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .matlab-titlebar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.65rem 1.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .matlab-brand {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .matlab-logo {
-            width: 26px;
-            height: 26px;
-            background: linear-gradient(135deg, #d9531e, #b83a0a);
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-weight: 900;
-            font-size: 0.85rem;
-            box-shadow: 0 2px 6px rgba(217, 83, 30, 0.4);
-            font-family: var(--font-code);
-        }
-
-        .matlab-title {
-            font-size: 0.95rem;
-            font-weight: 600;
-            letter-spacing: -0.2px;
-            color: var(--text-primary);
-        }
-
-        .matlab-version-tag {
-            background: rgba(56, 189, 248, 0.12);
-            color: var(--matlab-blue-light);
-            border: 1px solid rgba(56, 189, 248, 0.25);
-            font-size: 0.72rem;
-            font-weight: 600;
-            padding: 2px 7px;
-            border-radius: 4px;
-            font-family: var(--font-code);
-        }
-
-        .matlab-env-path {
-            font-family: var(--font-code);
-            font-size: 0.78rem;
-            color: var(--text-muted);
-            background: rgba(0,0,0,0.3);
-            padding: 3px 10px;
-            border-radius: 4px;
-            border: 1px solid var(--matlab-border);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* Toolstrip Ribbon */
-        .matlab-ribbon {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.4rem 1.5rem;
-            background: #191e2b;
-            overflow-x: auto;
-        }
-
-        .ribbon-btn {
-            background: transparent;
-            border: 1px solid transparent;
-            color: var(--text-secondary);
-            font-size: 0.78rem;
-            font-weight: 500;
-            padding: 0.35rem 0.75rem;
-            border-radius: 4px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
-            font-family: var(--font-ui);
-        }
-
-        .ribbon-btn:hover {
-            background: rgba(255, 255, 255, 0.06);
-            color: var(--text-primary);
-        }
-
-        .ribbon-btn.run-btn {
-            background: rgba(16, 185, 129, 0.15);
-            color: #34d399;
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            font-weight: 600;
-        }
-
-        .ribbon-btn.run-btn:hover {
-            background: rgba(16, 185, 129, 0.25);
-            color: #10b981;
-        }
-
-        .ribbon-separator {
-            width: 1px;
-            height: 18px;
-            background-color: var(--matlab-border);
-            margin: 0 4px;
-        }
-
-        /* ----- Main Layout ----- */
-        .app-container {
-            display: flex;
-            flex: 1;
-        }
-
-        /* ----- MATLAB Sidebar (Current Folder / File Browser) ----- */
-        .matlab-sidebar {
-            width: 290px;
-            background-color: var(--matlab-sidebar);
-            border-right: 1px solid var(--matlab-border);
-            padding: 1.25rem 0;
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-            min-height: calc(100vh - 80px);
-        }
-
-        .sidebar-section-title {
-            font-size: 0.72rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: var(--text-muted);
-            padding: 0 1.25rem 0.65rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .file-list {
-            list-style: none;
-            padding: 0 0.5rem;
-        }
-
-        .file-item {
-            margin-bottom: 3px;
-        }
-
-        .file-link {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.65rem 0.85rem;
-            color: var(--text-secondary);
-            text-decoration: none;
-            border-radius: 6px;
-            font-size: 0.88rem;
-            font-weight: 500;
-            transition: all 0.15s ease;
-            border-left: 3px solid transparent;
-        }
-
-        .file-link:hover {
-            background-color: rgba(255, 255, 255, 0.04);
-            color: var(--text-primary);
-        }
-
-        .file-link.active {
-            background-color: rgba(56, 189, 248, 0.1);
-            color: var(--matlab-blue-light);
-            border-left-color: var(--matlab-blue-light);
-            font-weight: 600;
-        }
-
-        .file-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .m-icon {
-            background-color: #273145;
-            color: #38bdf8;
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            font-size: 0.68rem;
-            font-weight: 700;
-            padding: 1px 5px;
-            border-radius: 3px;
-            font-family: var(--font-code);
-        }
-
-        .file-link.active .m-icon {
-            background-color: var(--matlab-blue);
-            color: #fff;
-            border-color: var(--matlab-blue);
-        }
-
-        .quick-copy-sidebar {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            padding: 4px 6px;
-            border-radius: 4px;
-            cursor: pointer;
-            opacity: 0.6;
-            transition: 0.2s;
-        }
-
-        .file-link:hover .quick-copy-sidebar,
-        .quick-copy-sidebar:hover {
-            opacity: 1;
-            color: var(--text-primary);
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        /* ----- Main Editor Area ----- */
-        .editor-workspace {
-            flex: 1;
-            padding: 2rem 3rem;
-            max-width: 1100px;
-            overflow-y: auto;
-        }
-
-        .program-container {
-            display: none;
-            animation: fadeIn 0.3s ease-out forwards;
-        }
-
-        .program-container.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Program Header Banner */
-        .program-header-banner {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 2rem;
-            padding-bottom: 1.25rem;
-            border-bottom: 1px solid var(--matlab-border);
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .program-title-group h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            letter-spacing: -0.5px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .program-badge {
-            background: #232c3f;
-            color: var(--matlab-orange);
-            border: 1px solid rgba(217, 83, 30, 0.4);
-            font-size: 0.8rem;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 5px;
-            font-family: var(--font-code);
-        }
-
-        .program-meta {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-top: 0.35rem;
-        }
-
-        /* Top Action Buttons */
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .action-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            padding: 0.6rem 1.15rem;
-            border-radius: 6px;
-            font-size: 0.88rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid transparent;
-            font-family: var(--font-ui);
-        }
-
-        .action-btn.copy-master {
-            background-color: #273145;
-            color: #f1f5f9;
-            border: 1px solid var(--matlab-border-light);
-        }
-
-        .action-btn.copy-master:hover {
-            background-color: #323f58;
-            border-color: #49597a;
-            transform: translateY(-1px);
-        }
-
-        .action-btn.run-master {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: #fff;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
-        }
-
-        .action-btn.run-master:hover {
-            background: linear-gradient(135deg, #059669, #047857);
-            transform: translateY(-1px);
-        }
-
-        /* Content Section Cards */
-        .matlab-card {
-            background-color: var(--matlab-card);
-            border: 1px solid var(--matlab-border);
-            border-radius: 10px;
-            padding: 1.75rem 2rem;
-            margin-bottom: 1.75rem;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
-            transition: border-color 0.2s ease;
-        }
-
-        .matlab-card:hover {
-            border-color: var(--matlab-border-light);
-        }
-
-        .card-heading {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--matlab-blue-light);
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .card-heading-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 28px;
-            height: 28px;
-            background: rgba(56, 189, 248, 0.12);
-            border: 1px solid rgba(56, 189, 248, 0.25);
-            border-radius: 6px;
-            color: var(--matlab-blue-light);
-            font-size: 0.9rem;
-        }
-
-        .card-text {
-            color: #cbd5e1;
-            font-size: 1rem;
-            line-height: 1.7;
-        }
-
-        /* Procedure List */
-        .procedure-steps {
-            list-style: none;
-            counter-reset: step-counter;
-        }
-
-        .procedure-steps li {
-            position: relative;
-            padding-left: 2.5rem;
-            margin-bottom: 0.85rem;
-            color: #cbd5e1;
-            font-size: 0.98rem;
-            counter-increment: step-counter;
-        }
-
-        .procedure-steps li:last-child {
-            margin-bottom: 0;
-        }
-
-        .procedure-steps li::before {
-            content: counter(step-counter);
-            position: absolute;
-            left: 0;
-            top: 2px;
-            width: 22px;
-            height: 22px;
-            background-color: rgba(217, 83, 30, 0.15);
-            color: var(--matlab-orange);
-            border: 1px solid rgba(217, 83, 30, 0.35);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            font-weight: 700;
-            font-family: var(--font-code);
-        }
-
-        /* MATLAB Code Window Component */
-        .code-window {
-            border: 1px solid var(--matlab-border);
-            border-radius: 8px;
-            overflow: hidden;
-            background-color: #0f131c;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
-            margin-top: 0.5rem;
-        }
-
-        .code-window-bar {
-            background-color: #161b26;
-            border-bottom: 1px solid var(--matlab-border);
-            padding: 0.55rem 1.25rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .editor-tab {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background-color: #0f131c;
-            border: 1px solid var(--matlab-border);
-            border-bottom: none;
-            padding: 5px 12px;
-            border-radius: 5px 5px 0 0;
-            font-family: var(--font-code);
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .code-copy-btn {
-            background-color: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            color: var(--text-secondary);
-            font-size: 0.78rem;
-            font-family: var(--font-ui);
-            font-weight: 600;
-            padding: 0.38rem 0.85rem;
-            border-radius: 5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
-        }
-
-        .code-copy-btn:hover {
-            background-color: rgba(255, 255, 255, 0.12);
-            color: #fff;
-            border-color: rgba(255, 255, 255, 0.25);
-        }
-
-        .code-copy-btn.copied {
-            background-color: rgba(16, 185, 129, 0.2) !important;
-            border-color: rgba(16, 185, 129, 0.4) !important;
-            color: #34d399 !important;
-        }
-
-        /* Prism Code Block Overrides */
-        pre[class*="language-"] {
-            margin: 0 !important;
-            padding: 1.5rem !important;
-            background: #0f131c !important;
-            font-family: var(--font-code) !important;
-            font-size: 0.92rem !important;
-            line-height: 1.7 !important;
-            border-radius: 0 !important;
-        }
-
-        code[class*="language-"] {
-            font-family: var(--font-code) !important;
-        }
-
-        /* Result Section */
-        .result-card-inner {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .result-content {
-            display: flex;
-            align-items: flex-start;
-            gap: 1rem;
-            flex: 1;
-        }
-
-        .result-check {
-            width: 32px;
-            height: 32px;
-            background-color: rgba(16, 185, 129, 0.15);
-            border: 1px solid rgba(16, 185, 129, 0.35);
-            color: var(--matlab-green);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-
-        /* Live Preview Button */
-        .run-live-btn {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: #fff;
-            border: none;
-            padding: 0.65rem 1.25rem;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.88rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
-            font-family: var(--font-ui);
-            flex-shrink: 0;
-        }
-
-        .run-live-btn:hover {
-            background: linear-gradient(135deg, #059669, #047857);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 900px) {
-            .app-container {
-                flex-direction: column;
-            }
-            .matlab-sidebar {
-                width: 100%;
-                min-height: auto;
-                border-right: none;
-                border-bottom: 1px solid var(--matlab-border);
-                padding: 1rem 0.5rem;
-            }
-            .file-list {
-                display: flex;
-                overflow-x: auto;
-                gap: 0.5rem;
-                padding-bottom: 0.5rem;
-            }
-            .file-item {
-                flex-shrink: 0;
-            }
-            .editor-workspace {
-                padding: 1.5rem 1rem;
-            }
-            .matlab-env-path {
-                display: none;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="html-title">MATLAB R2018b - [PG1.m]</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M2 22 11 14 15 9 19 2 24 13 30 22 22 25 12 30Z' fill='%23e8742a'/><path d='M11 14 15 9 19 2 17 18 12 30 2 22Z' fill='%23c9501a'/><path d='M17 18 19 2 24 13 30 22 22 25Z' fill='%23f6a05a'/></svg>">
+
+<style>
+    :root {
+        --blue: #0f4c8c;
+        --blue-dark: #09396b;
+        --blue-light: #4a83c6;
+        --gray-split: #d4d6d9;
+        --gray-line: #ababab;
+        --gray-hdr: #ececec;
+        --gray-hdr-border: #c8c8c8;
+        --ribbon-bg: #f6f7f8;
+        --ribbon-border: #d4d4d4;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+        height: 100%;
+        overflow: hidden;
+        font-family: "Segoe UI", Arial, sans-serif;
+        font-size: 12px;
+        background: var(--gray-split);
+        color: #000;
+    }
+
+    body { display: flex; flex-direction: column; }
+
+    button { font-family: inherit; }
+
+    /* ===== Flat Windows 10 scrollbars ===== */
+    ::-webkit-scrollbar { width: 17px; height: 17px; background: #f0f0f0; }
+    ::-webkit-scrollbar-track { background: #f0f0f0; }
+    ::-webkit-scrollbar-thumb { background: #cdcdcd; }
+    ::-webkit-scrollbar-thumb:hover { background: #a6a6a6; }
+    ::-webkit-scrollbar-corner { background: #f0f0f0; }
+    ::-webkit-scrollbar-button:single-button {
+        display: block; width: 17px; height: 17px;
+        background-color: #f0f0f0; background-repeat: no-repeat; background-position: center;
+    }
+    ::-webkit-scrollbar-button:single-button:hover { background-color: #dadada; }
+    ::-webkit-scrollbar-button:single-button:vertical:decrement {
+        background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='17' height='17'><path d='M4.5 10.5 8.5 6.5 12.5 10.5' fill='none' stroke='%23606060' stroke-width='1.6'/></svg>");
+    }
+    ::-webkit-scrollbar-button:single-button:vertical:increment {
+        background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='17' height='17'><path d='M4.5 6.5 8.5 10.5 12.5 6.5' fill='none' stroke='%23606060' stroke-width='1.6'/></svg>");
+    }
+    ::-webkit-scrollbar-button:single-button:horizontal:decrement {
+        background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='17' height='17'><path d='M10.5 4.5 6.5 8.5 10.5 12.5' fill='none' stroke='%23606060' stroke-width='1.6'/></svg>");
+    }
+    ::-webkit-scrollbar-button:single-button:horizontal:increment {
+        background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='17' height='17'><path d='M6.5 4.5 10.5 8.5 6.5 12.5' fill='none' stroke='%23606060' stroke-width='1.6'/></svg>");
+    }
+    @supports not selector(::-webkit-scrollbar) {
+        * { scrollbar-width: thin; scrollbar-color: #cdcdcd #f0f0f0; }
+    }
+
+    /* ===== Windows 10 title bar ===== */
+    .win-titlebar {
+        flex: none;
+        height: 30px;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-left: 8px;
+        user-select: none;
+        border-bottom: 1px solid #e5e5e5;
+    }
+    .titlebar-left { display: flex; align-items: center; gap: 8px; }
+    .matlab-icon-box { width: 16px; height: 16px; display: flex; }
+    .matlab-icon-box svg { width: 16px; height: 16px; }
+    .win-title-text { font-size: 12px; color: #000; font-family: "Segoe UI", Arial, sans-serif; }
+    .win-caption-buttons { display: flex; height: 100%; }
+    .caption-btn {
+        width: 46px; height: 30px;
+        display: flex; align-items: center; justify-content: center;
+        background: transparent; border: none; color: #000; cursor: default;
+    }
+    .caption-btn:hover { background: #e5e5e5; }
+    .caption-btn.close:hover { background: #e81123; color: #fff; }
+
+    /* ===== Tab strip (deep blue) ===== */
+    .ribbon { flex: none; background: #f6f7f8; user-select: none; }
+
+    .ribbon-tabs-bar {
+        height: 28px;
+        background: var(--blue);
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        padding: 0;
+    }
+    .tabs-left { display: flex; align-items: flex-end; height: 100%; padding-left: 4px; }
+    .rib-tab {
+        height: 28px;
+        padding: 0 18px;
+        display: flex; align-items: center;
+        font-size: 12px;
+        font-weight: 400;
+        color: #ffffff;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        border-radius: 2px 2px 0 0;
+        transition: background 0.1s;
+    }
+    .rib-tab:hover { background: rgba(255,255,255,0.15); }
+    .rib-tab.active {
+        background: #ffffff;
+        color: #1a1a1a;
+        font-weight: 600;
+        box-shadow: 0 -1px 2px rgba(0,0,0,0.1);
+    }
+    .rib-tab.active:hover { background: #ffffff; }
+    .rib-tab.contextual { background: #1b5fa8; }
+    .rib-tab.contextual:hover { background: #2570c2; }
+
+    .tabs-right-tools { display: flex; align-items: center; gap: 6px; height: 100%; padding-right: 8px; }
+    .doc-search-box {
+        display: flex; align-items: center; background: #ffffff; border-radius: 2px;
+        height: 20px; padding: 0 4px 0 6px; gap: 4px; border: 1px solid #789fc9;
+    }
+    .doc-search-box input {
+        border: none; outline: none; background: transparent; font-size: 11px; width: 140px; color: #222;
+        font-family: inherit;
+    }
+    .doc-search-box input::placeholder { color: #888; }
+    .quick-tool-btn {
+        width: 22px; height: 20px;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; color: #dce8f8; border-radius: 2px;
+    }
+    .quick-tool-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
+    .quick-help {
+        width: 18px; height: 18px; border-radius: 50%;
+        background: #1f6dbd; color: #fff; border: 1px solid #4a8ad4;
+        font-size: 11px; font-weight: 700;
+        display: flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+    .quick-help:hover { background: #2982dc; }
+    .quick-x { color: #fff; font-size: 12px; cursor: pointer; opacity: 0.8; padding: 0 4px; }
+    .quick-x:hover { opacity: 1; }
+
+    /* ===== Ribbon body ===== */
+    .ribbon-body {
+        position: relative;
+        display: flex;
+        height: 92px;
+        padding: 4px 6px 0;
+        background: var(--ribbon-bg);
+        border-bottom: 1px solid var(--ribbon-border);
+    }
+    .rib-section {
+        display: flex; flex-direction: column; justify-content: space-between;
+        padding: 0 8px;
+        border-right: 1px solid #dcdcdc;
+    }
+    .rib-section:last-of-type { border-right: none; }
+    .rib-buttons-row { display: flex; align-items: flex-start; gap: 2px; flex: 1; padding-top: 1px; }
+    .rib-section-title {
+        text-align: center; font-size: 10px; color: #5a5a5a;
+        text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 0 3px; font-weight: 500;
+    }
+
+    .tool-btn-big {
+        display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+        min-width: 50px; height: 68px;
+        padding: 3px 6px 2px;
+        background: transparent; border: 1px solid transparent; border-radius: 2px;
+        cursor: pointer; color: #1a1a1a;
+        font-size: 11px; line-height: 1.15; gap: 2px;
+    }
+    .tool-btn-big svg { flex: none; }
+    .tool-btn-big:hover { background: #e5f1fb; border-color: #c4d6ea; }
+    .tool-btn-big:active { background: #d3e2f3; }
+    .tool-btn-big .caret { font-size: 8px; color: #444; line-height: 8px; margin-top: -1px; }
+
+    .tool-sub-col { display: flex; flex-direction: column; gap: 1px; justify-content: center; height: 66px; padding-left: 2px; }
+    .tool-btn-small {
+        display: flex; align-items: center; gap: 6px;
+        background: transparent; border: 1px solid transparent; border-radius: 2px;
+        padding: 2px 6px 2px 4px; cursor: pointer;
+        font-size: 11px; color: #1a1a1a; white-space: nowrap; height: 21px;
+    }
+    .tool-btn-small:hover { background: #e5f1fb; border-color: #c4d6ea; }
+    .tool-btn-small .caret { font-size: 8px; color: #444; }
+
+    .ribbon-collapse { position: absolute; right: 6px; bottom: 3px; color: #555; cursor: pointer; }
+
+    /* ===== Desktop dock layout ===== */
+    .main-desktop-grid {
+        flex: 1; min-height: 0;
+        display: flex;
+        gap: 4px;
+        padding: 4px 5px 4px;
+        background: var(--gray-split);
+    }
+
+    .dock-panel {
+        background: #fff;
+        border: 1px solid var(--gray-line);
+        display: flex; flex-direction: column;
+        overflow: hidden; min-height: 0; min-width: 0;
+    }
+
+    .dock-header-blue, .dock-header-gray {
+        flex: none; height: 24px;
+        padding: 0 6px 0 8px;
+        display: flex; align-items: center; justify-content: space-between;
+        font-size: 12px; user-select: none;
+    }
+    .dock-header-blue {
+        background: var(--blue);
+        color: #fff;
+        border-bottom: 1px solid var(--blue-dark);
+        font-weight: 400;
+    }
+    .dock-header-gray {
+        background: var(--gray-hdr);
+        color: #1a1a1a;
+        border-bottom: 1px solid var(--gray-hdr-border);
+        font-weight: 600;
+    }
+    .dock-header-blue .dock-title { color: #ffffff; font-size: 12px; font-weight: 400; }
+    .dock-header-gray .dock-title { color: #1a1a1a; font-size: 12px; font-weight: 600; }
+
+    .dock-ctrls { display: flex; align-items: center; gap: 6px; }
+    .dock-btn {
+        width: 14px; height: 14px; display: flex; align-items: center; justify-content: center;
+        cursor: pointer; opacity: 0.85;
+    }
+    .dock-btn:hover { opacity: 1; }
+    .dock-header-blue .dock-btn { color: #dce8f8; }
+    .dock-header-gray .dock-btn { color: #555555; }
+    .dock-x-btn { font-size: 11px; cursor: pointer; padding: 0 2px; }
+    .dock-header-blue .dock-x-btn { color: #ffffff; opacity: 0.85; }
+    .dock-header-gray .dock-x-btn { color: #555555; }
+    .dock-x-btn:hover { opacity: 1; color: #e81123 !important; }
+
+    .clc-link { font-size: 11px; color: #cfe0f6; cursor: pointer; padding-right: 4px; }
+    .clc-link:hover { color: #fff; text-decoration: underline; }
+
+    /* Left dock: Current Folder (22%) */
+    .dock-left-folder { flex: 22 1 0; }
+
+    .folder-path-row {
+        flex: none; display: flex; align-items: center; gap: 2px;
+        padding: 4px 4px 4px; background: #fff; border-bottom: 1px solid #e0e0e0;
+    }
+    .addr-nav-btn {
+        flex: none; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
+        background: none; border: 1px solid transparent; border-radius: 2px; cursor: pointer;
+    }
+    .addr-nav-btn:hover { background: #e5f1fb; border-color: #c4d6ea; }
+    .addr-nav-btn.disabled { opacity: 0.45; cursor: default; }
+    .addr-nav-btn.disabled:hover { background: none; border-color: transparent; }
+    .addr-path-box {
+        flex: 1; min-width: 0; height: 22px;
+        display: flex; align-items: center; gap: 4px;
+        border: 1px solid #adadad; background: #fff; padding: 0 4px 0 5px; color: #000;
+        font-size: 11.5px;
+    }
+    .addr-path-box .path-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .addr-path-box .combo-arrow { font-size: 8px; color: #333; }
+
+    .folder-col-header {
+        flex: none; display: flex; align-items: center; height: 22px;
+        background: #fff; border-bottom: 1px solid #dcdcdc;
+        font-size: 12px; color: #1a1a1a; user-select: none;
+    }
+    .folder-col-header > span { padding: 0 6px; height: 100%; display: flex; align-items: center; border-right: 1px solid #e6e6e6; }
+    .col-name { flex: 1; padding-left: 24px !important; }
+    .col-size { width: 62px; }
+    .col-type { width: 88px; border-right: none !important; }
+
+    .folder-tree { flex: 1; overflow-y: auto; list-style: none; background: #fff; padding-top: 2px; }
+    .tree-row {
+        display: flex; align-items: center; height: 20px;
+        font-size: 12px; color: #000; white-space: nowrap; cursor: default;
+    }
+    .tree-row:hover { background: #eef5fc; }
+    .tree-expander {
+        flex: none; width: 9px; height: 9px; margin: 0 6px 0 4px;
+        border: 1px solid #8a8a8a; position: relative; background: #fff;
+    }
+    .tree-expander::before { content: ''; position: absolute; left: 1px; top: 3px; width: 5px; height: 1px; background: #444; }
+    .tree-expander::after { content: ''; position: absolute; left: 3px; top: 1px; width: 1px; height: 5px; background: #444; }
+    .tree-name { flex: 1; display: flex; align-items: center; gap: 6px; padding-left: 4px; overflow: hidden; text-overflow: ellipsis; }
+    .tree-name.indent { padding-left: 22px; }
+    .tree-size { width: 62px; padding: 0 6px; display: flex; align-items: center; color: #444; font-size: 11px; }
+    .tree-type { width: 88px; padding: 0 6px; color: #333; overflow: hidden; text-overflow: ellipsis; }
+    .file-ico { flex: none; display: block; }
+
+    /* Center column (53%) */
+    .dock-center-col { flex: 53 1 0; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .dock-editor-pane { flex: 62 1 0; }
+    .dock-command-pane { flex: 38 1 0; }
+
+    .editor-tabs-strip {
+        flex: none; display: flex; align-items: flex-end;
+        height: 26px; background: #e8e8e8; border-bottom: 1px solid #c8c8c8; padding-left: 4px;
+    }
+    .single-file-tab {
+        display: flex; align-items: center; gap: 8px;
+        height: 24px; padding: 0 8px 0 10px;
+        background: #fff; border: 1px solid #c8c8c8; border-bottom: 1px solid #fff; border-radius: 2px 2px 0 0;
+        font-size: 12px; color: #000; margin-bottom: -1px;
+    }
+    .single-file-tab .close-x { color: #666; font-size: 11px; cursor: pointer; }
+    .single-file-tab .close-x:hover { color: #c42b1c; }
+    .new-tab-btn {
+        height: 22px; width: 24px; display: flex; align-items: center; justify-content: center;
+        font-size: 14px; color: #555; cursor: pointer; margin-left: 2px;
+        border: 1px solid #c8c8c8; border-bottom: none; background: #e0e0e0; border-radius: 2px 2px 0 0;
+    }
+    .new-tab-btn:hover { background: #d0d0d0; }
+
+    .editor-text-body { flex: 1; min-height: 0; display: flex; background: #fff; }
+    .editor-scroll { flex: 1; min-width: 0; overflow: auto; }
+    .editor-inner { display: flex; min-height: 100%; width: max-content; min-width: 100%; }
+
+    .editor-line-gutter {
+        flex: none; padding: 6px 0 6px 6px; min-width: 65px;
+        background: #f7f7f7; border-right: 1px solid #e3e3e3;
+        font-family: Consolas, "Courier New", monospace; font-size: 13px; color: #6e6e6e;
+        user-select: none; position: sticky; left: 0; z-index: 1;
+    }
+    .g-row { display: flex; height: 20px; line-height: 20px; }
+    .g-num { min-width: 24px; text-align: right; }
+    .g-dash { width: 14px; text-align: center; color: #6e6e6e; }
+    .g-fold { width: 14px; position: relative; flex: none; }
+    .g-fold.start::before {
+        content: ''; position: absolute; left: 2px; top: 5px; width: 9px; height: 9px;
+        border: 1px solid #7a7a7a; background: #fff;
+    }
+    .g-fold.start::after {
+        content: ''; position: absolute; left: 4px; top: 9px; width: 5px; height: 1px; background: #333;
+    }
+    .g-fold.start { background: linear-gradient(#9a9a9a, #9a9a9a) 6px 14px / 1px 6px no-repeat; }
+    .g-fold.mid::before { content: ''; position: absolute; left: 6px; top: 0; bottom: 0; width: 1px; background: #9a9a9a; }
+    .g-fold.end::before {
+        content: ''; position: absolute; left: 6px; top: 0; height: 10px; width: 7px;
+        border-left: 1px solid #9a9a9a; border-bottom: 1px solid #9a9a9a;
+    }
+
+    .editor-code-view {
+        flex: 1; padding: 6px 14px 6px 8px;
+        font-family: Consolas, "Courier New", monospace; font-size: 13px; line-height: 20px;
+        white-space: pre; color: #000; outline: none; min-width: 0;
+    }
+
+    /* MATLAB native syntax colors */
+    .c-kw  { color: #0000ff; }
+    .c-com { color: #228b22; }
+    .c-str { color: #a020f0; }
+    .c-cmd { color: #000080; }
+
+    .editor-analyzer-bar {
+        flex: none; width: 14px; background: #fff; border-left: 1px solid #e6e6e6;
+        display: flex; flex-direction: column; align-items: center; padding-top: 3px;
+    }
+    .analyzer-green-indicator { width: 8px; height: 8px; background: #3cb043; border-radius: 1px; }
+
+    /* Command window */
+    .cmd-text-area {
+        position: relative; flex: 1; min-height: 0;
+        padding: 6px 10px 6px 30px; background: #fff;
+        font-family: Consolas, "Courier New", monospace; font-size: 13px; line-height: 19px;
+        color: #000; overflow-y: auto; user-select: text;
+    }
+    .cmd-line { white-space: pre-wrap; min-height: 19px; }
+    .cmd-fx {
+        display: inline-block; width: 24px; margin-left: -24px;
+        font-family: "Times New Roman", serif; font-style: italic; font-weight: 700;
+        color: #5a5a5a; font-size: 13px;
+    }
+    .cmd-cursor-block {
+        display: inline-block; width: 7px; height: 14px; background: #000; vertical-align: text-bottom;
+        animation: blink 1s step-end infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* Right column (25%) */
+    .dock-right-col { flex: 25 1 0; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .dock-workspace-pane { flex: 52 1 0; }
+    .dock-history-pane { flex: 48 1 0; }
+    .panel-scroll { flex: 1; min-height: 0; overflow: auto; background: #fff; }
+
+    .ws-grid-table { width: 100%; border-collapse: collapse; font-size: 12px; table-layout: fixed; background: #fff; }
+    .ws-grid-table th {
+        height: 22px; background: #fff;
+        border-bottom: 1px solid #dcdcdc; border-right: 1px solid #e6e6e6;
+        padding: 0 6px; text-align: left; font-weight: 400; color: #1a1a1a; user-select: none;
+    }
+    .ws-grid-table td {
+        height: 20px; padding: 0 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        color: #000;
+    }
+    .ws-grid-table td.ws-val { color: #0000cc; }
+    .ws-grid-table tr:hover td { background: #eef5fc; }
+    .var-icon-matlab {
+        display: inline-block; width: 14px; height: 14px; vertical-align: -3px; margin-right: 5px;
+        background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14'><rect x='.5' y='.5' width='13' height='13' fill='white' stroke='%23c9a227'/><path d='M.5 8h13M5 .5v13M9 .5v13' stroke='%23e3c767'/><rect x='.5' y='.5' width='13' height='4.5' fill='%23f2c94c' stroke='%23c9a227'/></svg>") no-repeat;
+    }
+
+    .history-list-box {
+        padding: 5px 8px 5px 12px; background: #fff; overflow-y: auto;
+        font-family: Consolas, "Courier New", monospace; font-size: 13px; line-height: 19px; color: #000;
+    }
+    .hist-date-stamp { color: #333; }
+    .hist-line { padding-left: 6px; border-left: 1px solid #d0d0d0; margin-left: 2px; }
+
+    /* ===== Bottom status bar ===== */
+    .bottom-bar {
+        flex: none; height: 22px; display: flex; align-items: center; padding: 0 6px;
+        background: #f0f0f0; border-top: 1px solid #d0d0d0; user-select: none;
+    }
+
+    /* Copy toast */
+    .stealth-toast {
+        position: fixed; bottom: 30px; right: 14px;
+        background: #2b2b2b; color: #fff; padding: 5px 14px; border-radius: 2px;
+        font-size: 12px; display: none; z-index: 99999; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    /* Documentation dialog */
+    .doc-modal {
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        width: 640px; max-width: 92vw; background: #fff; border: 1px solid var(--blue);
+        box-shadow: 0 8px 28px rgba(0,0,0,0.3); display: none; flex-direction: column; z-index: 99999;
+    }
+    .doc-modal-head {
+        background: var(--blue); color: #fff; padding: 6px 10px;
+        display: flex; align-items: center; justify-content: space-between; font-size: 12px;
+    }
+    .doc-modal-body { padding: 16px 20px; max-height: 70vh; overflow-y: auto; font-size: 12px; line-height: 1.6; color: #1a1a1a; }
+    .doc-modal-body h3 { color: var(--blue); margin-bottom: 6px; font-size: 13px; }
+    .doc-modal-body h4 { color: #333; margin: 10px 0 3px; font-size: 12px; }
+    .doc-modal-body ol { padding-left: 18px; margin-bottom: 10px; }
+    .doc-keys { margin-top: 12px; padding-top: 8px; border-top: 1px solid #e2e2e2; color: #555; font-size: 11.5px; }
+    .doc-modal-foot { padding: 6px 10px; background: #f0f0f0; border-top: 1px solid #d4d4d4; display: flex; justify-content: flex-end; }
+    .doc-modal-foot button { padding: 3px 16px; background: #e1e1e1; border: 1px solid #adadad; cursor: pointer; font-size: 12px; }
+    .doc-modal-foot button:hover { background: #e5f1fb; border-color: #0078d7; }
+
+    /* Figure window */
+    .fig-window {
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        width: 740px; max-width: 92vw; background: #f0f0f0; border: 1px solid #5a5a5a;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4); display: none; flex-direction: column; z-index: 88888;
+    }
+    .fig-titlebar { height: 30px; background: #fff; display: flex; align-items: center; justify-content: space-between; padding-left: 8px; font-size: 12px; }
+    .fig-titlebar .fig-left { display: flex; align-items: center; gap: 8px; }
+    .fig-x { width: 46px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: default; font-size: 13px; }
+    .fig-x:hover { background: #e81123; color: #fff; }
+    .fig-menubar { display: flex; gap: 14px; padding: 3px 10px; background: #f0f0f0; border-bottom: 1px solid #d4d4d4; font-size: 12px; user-select: none; }
+    .fig-grid {
+        padding: 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px;
+        max-height: 62vh; overflow-y: auto; background: #f0f0f0;
+    }
+    .fig-box { display: flex; flex-direction: column; align-items: center; }
+    .fig-box-title { font-family: Arial, Helvetica, sans-serif; font-size: 11px; font-weight: 700; margin-bottom: 4px; color: #000; }
+
+    /* ===== CLASSIC R2012b THEME (Aero Gradient) ===== */
+    body.theme-r2012b .win-titlebar {
+        background: linear-gradient(to bottom, #dbe6f3 0%, #bfd5ec 50%, #a8c8e8 51%, #c5d9ee 100%) !important;
+        border-bottom: 1px solid #7c99b8 !important;
+    }
+    body.theme-r2012b .ribbon-tabs-bar {
+        background: linear-gradient(to bottom, #0d3868 0%, #15467c 50%, #103c6e 100%) !important;
+    }
+    body.theme-r2012b .rib-tab {
+        border-radius: 4px 4px 0 0 !important;
+        background: linear-gradient(to bottom, rgba(255,255,255,0.18), rgba(255,255,255,0.05));
+        margin-right: 2px;
+    }
+    body.theme-r2012b .rib-tab.active {
+        background: linear-gradient(to bottom, #ffffff 0%, #edf2f8 100%) !important;
+        color: #0b3d73 !important;
+        border: 1px solid #789fc9 !important;
+        border-bottom: 1px solid #edf2f8 !important;
+    }
+    body.theme-r2012b .ribbon-body {
+        background: linear-gradient(to bottom, #fcfdfe 0%, #edf2f7 50%, #e2eaf2 100%) !important;
+        border-bottom: 1px solid #a4b7c8 !important;
+    }
+    body.theme-r2012b .dock-panel {
+        border: 1px solid #9aaab8 !important;
+        border-radius: 3px !important;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.08) !important;
+    }
+    body.theme-r2012b .dock-header-blue,
+    body.theme-r2012b .dock-header-gray {
+        background: linear-gradient(to bottom, #f4f6f8 0%, #dbe2e9 50%, #cfd7e1 51%, #e6ecf2 100%) !important;
+        border-bottom: 1px solid #9aaab8 !important;
+        color: #1a2c3d !important;
+        font-weight: 700 !important;
+    }
+    body.theme-r2012b .dock-header-blue .dock-title,
+    body.theme-r2012b .dock-header-gray .dock-title {
+        color: #1a2c3d !important;
+        font-weight: 700 !important;
+    }
+    body.theme-r2012b .dock-header-blue .dock-btn,
+    body.theme-r2012b .dock-header-blue .dock-x-btn {
+        color: #3b5066 !important;
+    }
+    body.theme-r2012b .main-desktop-grid {
+        background: #c2c9d1 !important;
+    }
+
+    /* Inactive editor tab */
+    .single-file-tab.inactive {
+        background: #dedede;
+        color: #555;
+        border-bottom: 1px solid #c8c8c8;
+        cursor: pointer;
+    }
+    .single-file-tab.inactive:hover { background: #e6e6e6; }
+
+    /* Code analyzer warning tick */
+    .analyzer-warn-tick {
+        position: absolute; top: 180px; width: 10px; height: 2px;
+        background: #f59e0b;
+    }
+
+    /* ===== Windows 10 Taskbar ===== */
+    .win-taskbar {
+        flex: none;
+        height: 40px;
+        background: #101010;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0;
+        user-select: none;
+        z-index: 10000;
+        border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .taskbar-left { display: flex; align-items: center; height: 100%; }
+    .win-start-btn {
+        width: 48px; height: 100%;
+        display: flex; align-items: center; justify-content: center;
+        background: transparent; border: none; cursor: default;
+    }
+    .win-start-btn:hover { background: rgba(255,255,255,0.12); }
+    .win-search-box {
+        height: 30px; width: 220px;
+        background: #202020; border: 1px solid #333;
+        display: flex; align-items: center; padding: 0 10px; gap: 8px;
+        color: #888; font-size: 12px; margin-right: 4px;
+    }
+    .cortana-circle {
+        margin-left: auto; width: 14px; height: 14px; border: 2px solid #aaa; border-radius: 50%;
+    }
+    .taskbar-icon-btn {
+        width: 42px; height: 100%;
+        display: flex; align-items: center; justify-content: center;
+        background: transparent; border: none; cursor: default; position: relative;
+    }
+    .taskbar-icon-btn:hover { background: rgba(255,255,255,0.1); }
+    .taskbar-icon-btn.active-app { background: rgba(255,255,255,0.08); }
+    .taskbar-icon-btn.active-app .active-pill {
+        position: absolute; bottom: 0; left: 10px; right: 10px; height: 2px;
+        background: #0078d7;
+    }
+    .taskbar-right {
+        display: flex; align-items: center; height: 100%; gap: 12px; padding-right: 6px;
+        color: #ffffff;
+    }
+    .taskbar-clock {
+        display: flex; flex-direction: column; align-items: flex-end;
+        font-size: 11px; line-height: 1.25; padding: 0 4px;
+    }
+    .taskbar-show-desktop {
+        width: 6px; height: 100%; border-left: 1px solid rgba(255,255,255,0.2); cursor: default;
+    }
+    .taskbar-show-desktop:hover { background: rgba(255,255,255,0.2); }
+</style>
 </head>
 <body>
 
-    <!-- MATLAB App Header -->
-    <header class="matlab-header">
-        <div class="matlab-titlebar">
-            <div class="matlab-brand">
-                <div class="matlab-logo">M</div>
-                <div class="matlab-title">MATLAB Online — Digital Image Processing Lab</div>
-                <span class="matlab-version-tag">R2024b</span>
+<!-- ===== Windows 10 title bar ===== -->
+<div class="win-titlebar">
+    <div class="titlebar-left">
+        <div class="matlab-icon-box">
+            <svg viewBox="0 0 32 32">
+                <path d="M2 22 11 14 15 9 19 2 24 13 30 22 22 25 12 30Z" fill="#e8742a"/>
+                <path d="M11 14 15 9 19 2 17 18 12 30 2 22Z" fill="#c9501a"/>
+                <path d="M17 18 19 2 24 13 30 22 22 25Z" fill="#f6a05a"/>
+            </svg>
+        </div>
+        <span class="win-title-text" id="top-win-title">MATLAB R2018b - [PG1.m]</span>
+    </div>
+    <div class="win-caption-buttons">
+        <button class="caption-btn" title="Minimize"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M0 5.5h10" stroke="currentColor" stroke-width="1"/></svg></button>
+        <button class="caption-btn" title="Restore Down"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M2.5 2.5V.5h7v7h-2" fill="none" stroke="currentColor"/><rect x=".5" y="2.5" width="7" height="7" fill="none" stroke="currentColor"/></svg></button>
+        <button class="caption-btn close" title="Close"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M0 0l10 10M10 0L0 10" stroke="currentColor" stroke-width="1"/></svg></button>
+    </div>
+</div>
+
+<!-- ===== Ribbon ===== -->
+<div class="ribbon">
+    <div class="ribbon-tabs-bar">
+        <div class="tabs-left">
+            <div class="rib-tab">HOME</div>
+            <div class="rib-tab">PLOTS</div>
+            <div class="rib-tab">APPS</div>
+            <div class="rib-tab active">EDITOR</div>
+            <div class="rib-tab contextual">PUBLISH</div>
+        </div>
+        <div class="tabs-right-tools">
+            <div class="doc-search-box">
+                <input type="text" placeholder="Search Documentation" readonly>
+                <svg width="12" height="12" viewBox="0 0 16 16"><circle cx="6.5" cy="6.5" r="4.5" fill="none" stroke="#666" stroke-width="1.8"/><path d="M10 10l4.5 4.5" stroke="#666" stroke-width="2.2"/></svg>
             </div>
-            <div class="matlab-env-path">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-                Current Directory: /DIP_Lab/Programs_5_8/
+            <div class="quick-tool-btn" id="btn-layout-toggle" title="Layout / Toggle Classic R2012b (Press T)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M3 9h18M9 9v12"/></svg>
+            </div>
+            <div class="quick-help" id="btn-quick-help" title="Help / Aim &amp; Procedure">?</div>
+            <span class="quick-x" title="Minimize Toolstrip">&#9650;</span>
+        </div>
+    </div>
+
+    <div class="ribbon-body">
+        <!-- FILE -->
+        <div class="rib-section">
+            <div class="rib-buttons-row">
+                <button class="tool-btn-big" id="btn-new" title="New Script">
+                    <svg width="32" height="32" viewBox="0 0 32 32"><path d="M7 3h14l6 6v20H7z" fill="#fff" stroke="#7b8795"/><path d="M21 3v6h6" fill="#e8edf3" stroke="#7b8795"/><path d="M11 15h12M11 19h12M11 23h9" stroke="#9aa6b4" stroke-width="1.5"/><circle cx="9" cy="8" r="6.5" fill="#f6b800" stroke="#c98f00"/><path d="M9 4.8v6.4M5.8 8h6.4" stroke="#fff" stroke-width="2"/></svg>
+                    <span>New<br>Script</span>
+                </button>
+                <button class="tool-btn-big" id="btn-new-drop" title="New">
+                    <svg width="32" height="32" viewBox="0 0 32 32"><path d="M12.5 4h7v8.5H28v7h-8.5V28h-7v-8.5H4v-7h8.5z" fill="#f6b800" stroke="#c98f00"/></svg>
+                    <span>New</span><span class="caret">&#x25BC;</span>
+                </button>
+                <button class="tool-btn-big" id="btn-open" title="Open">
+                    <svg width="32" height="32" viewBox="0 0 32 32"><path d="M3 7h9l3 3h14v17H3z" fill="#e5a400" stroke="#b98200"/><path d="M3 13h26l-3 14H3z" fill="#f8cf5a" stroke="#b98200"/></svg>
+                    <span>Open</span><span class="caret">&#x25BC;</span>
+                </button>
+                <button class="tool-btn-big" id="btn-save" title="Save">
+                    <svg width="32" height="32" viewBox="0 0 32 32"><path d="M4 4h21l3 3v21H4z" fill="#3b78bd" stroke="#24578f"/><rect x="9" y="4" width="13" height="9" fill="#fff"/><rect x="17" y="5.5" width="3" height="6" fill="#3b78bd"/><rect x="8" y="18" width="16" height="10" fill="#dfe8f4" stroke="#24578f"/></svg>
+                    <span>Save</span><span class="caret">&#x25BC;</span>
+                </button>
+                <div class="tool-sub-col">
+                    <button class="tool-btn-small" title="Compare">
+                        <svg width="15" height="15" viewBox="0 0 16 16"><rect x="1" y="2" width="6" height="12" fill="#fff" stroke="#3b78bd"/><rect x="9" y="2" width="6" height="12" fill="#fff" stroke="#3b78bd"/><path d="M5 8h6M5 8l2-2M11 8l-2 2" stroke="#2a8a35" stroke-width="1.2"/></svg>
+                        <span>Compare</span>
+                    </button>
+                    <button class="tool-btn-small" title="Print">
+                        <svg width="15" height="15" viewBox="0 0 16 16"><path d="M4 2h8v3H4zM2 5h12v7H2zM4 9h8v5H4z" fill="#fff" stroke="#7b8795"/><circle cx="12" cy="7" r="1" fill="#2a8a35"/></svg>
+                        <span>Print</span>
+                    </button>
+                    <button class="tool-btn-small" id="btn-ribbon-copy" title="Copy Current Script">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3b78bd" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        <span>Copy</span>
+                    </button>
+                </div>
+            </div>
+            <div class="rib-section-title">File</div>
+        </div>
+
+        <!-- VARIABLE -->
+        <div class="rib-section">
+            <div class="rib-buttons-row">
+                <button class="tool-btn-big" id="btn-import" title="Import Data">
+                    <svg width="32" height="32" viewBox="0 0 32 32"><path d="M12 3h8v11h6l-10 10L6 14h6z" fill="#3aa14a" stroke="#2a7c37"/><path d="M4 22v6h24v-6" fill="none" stroke="#7b8795" stroke-width="2.5"/></svg>
+                    <span>Import<br>Data</span>
+                </button>
+                <button class="tool-btn-big" id="btn-ws" title="Workspace">
+                    <svg width="32" height="32" viewBox="0 0 32 32"><rect x="3.5" y="4.5" width="25" height="23" fill="#fff" stroke="#7b8795"/><path d="M3.5 12.5h25M3.5 20h25M12 4.5v23M20 4.5v23" stroke="#b8c1cc"/><rect x="3.5" y="4.5" width="25" height="8" fill="#f2c94c" stroke="#b98200"/><path d="M12 4.5v8M20 4.5v8" stroke="#b98200"/></svg>
+                    <span>Workspace</span>
+                </button>
+                <button class="tool-btn-big" id="btn-clearws" title="Clear Workspace">
+                    <svg width="32" height="32" viewBox="0 0 32 32"><rect x="3.5" y="4.5" width="25" height="23" fill="#fff" stroke="#7b8795"/><path d="M3.5 12.5h25M3.5 20h25M12 4.5v23M20 4.5v23" stroke="#b8c1cc"/><rect x="3.5" y="4.5" width="25" height="8" fill="#f2c94c" stroke="#b98200"/><path d="M15 14l11 11M26 14L15 25" stroke="#d93025" stroke-width="3.2"/></svg>
+                    <span>Clear<br>Workspace</span>
+                </button>
+            </div>
+            <div class="rib-section-title">Variable</div>
+        </div>
+
+        <!-- RUN -->
+        <div class="rib-section">
+            <div class="rib-buttons-row">
+                <button class="tool-btn-big" id="btn-ribbon-run" title="Run (F5)">
+                    <svg width="32" height="32" viewBox="0 0 32 32"><path d="M8 4l19 12L8 28z" fill="#3fae49" stroke="#2a8a35" stroke-width="1.5" stroke-linejoin="round"/></svg>
+                    <span>Run</span><span class="caret">&#x25BC;</span>
+                </button>
+            </div>
+            <div class="rib-section-title">Run</div>
+        </div>
+
+        <div class="ribbon-collapse" title="Collapse the Toolstrip">
+            <svg width="12" height="10" viewBox="0 0 12 10"><path d="M1 5l5-4 5 4M1 9l5-4 5 4" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+        </div>
+    </div>
+</div>
+
+<!-- ===== Desktop docks ===== -->
+<div class="main-desktop-grid">
+
+    <!-- Current Folder -->
+    <div class="dock-panel dock-left-folder">
+        <div class="dock-header-gray">
+            <span class="dock-title">Current Folder</span>
+            <div class="dock-ctrls">
+                <svg class="dock-menu-ico" width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="none" stroke="currentColor"/><path d="M3.5 5.5l2.5 3 2.5-3z" fill="currentColor"/></svg>
+                <span class="dock-x-btn" title="Close">&#x2715;</span>
             </div>
         </div>
-        
-        <!-- MATLAB Ribbon / Toolstrip -->
-        <div class="matlab-ribbon">
-            <button class="ribbon-btn run-btn" id="ribbon-run-btn" title="Run Current Program">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                Run Program
+
+        <div class="folder-path-row">
+            <button class="addr-nav-btn" title="Back">
+                <svg width="14" height="14" viewBox="0 0 16 16"><path d="M8 3L3 8l5 5V9.5h5V6.5H8z" fill="#3b78bd"/></svg>
             </button>
-            <button class="ribbon-btn" id="ribbon-copy-btn" title="Copy Current Script">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                Copy Script
+            <button class="addr-nav-btn disabled" title="Forward">
+                <svg width="14" height="14" viewBox="0 0 16 16"><path d="M8 3l5 5-5 5V9.5H3V6.5h5z" fill="#a0a0a0"/></svg>
             </button>
-            <div class="ribbon-separator"></div>
-            <button class="ribbon-btn" onclick="window.scrollTo({top:0, behavior:'smooth'})">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
-                Top
+            <button class="addr-nav-btn" title="Up One Level">
+                <svg width="15" height="15" viewBox="0 0 16 16"><path d="M1 3h5l2 2h7v9H1z" fill="#f6c342" stroke="#b98200"/><path d="M8 7v5M5 9l3-3 3 3" fill="none" stroke="#2a8a35" stroke-width="1.8"/></svg>
             </button>
-            <button class="ribbon-btn" onclick="document.querySelector('.program-container.active .code-window').scrollIntoView({behavior:'smooth'})">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-                Jump to Code
+            <button class="addr-nav-btn" title="Browse for folder">
+                <svg width="15" height="15" viewBox="0 0 16 16"><path d="M1 3h5l2 2h7v9H1z" fill="#f6c342" stroke="#b98200"/><circle cx="10.5" cy="9.5" r="3" fill="#fff" stroke="#24578f"/><path d="M12.5 11.5l2.5 2.5" stroke="#24578f" stroke-width="1.5"/></svg>
+            </button>
+            <div class="addr-path-box">
+                <span class="path-text">C:\Users\johnDoe\Documents\MATLAB</span>
+                <span class="combo-arrow">&#x25BC;</span>
+            </div>
+            <button class="addr-nav-btn" title="Search">
+                <svg width="13" height="13" viewBox="0 0 16 16"><circle cx="6.5" cy="6.5" r="4.5" fill="none" stroke="#555" stroke-width="1.5"/><path d="M10 10l4.5 4.5" stroke="#555" stroke-width="2"/></svg>
             </button>
         </div>
-    </header>
 
-    <div class="app-container">
-        <!-- Sidebar: Current Folder Navigation -->
-        <aside class="matlab-sidebar">
-            <div class="sidebar-section-title">
-                <span>Current Folder</span>
-                <span style="font-size:0.65rem; color:#38bdf8;">4 M-FILES</span>
+        <div class="folder-col-header">
+            <span class="col-name">Name &#x25B4;</span>
+            <span class="col-size">Size</span>
+            <span class="col-type">Type</span>
+        </div>
+
+        <ul class="folder-tree" id="folder-tree-ul">
+            <li class="tree-row">
+                <span class="tree-expander"></span>
+                <span class="tree-name">Folders</span>
+            </li>
+            <li class="tree-row" id="single-m-row">
+                <span class="tree-name indent">
+                    <svg class="file-ico" width="14" height="16" viewBox="0 0 14 16"><path d="M1.5 .5h7l4 4v11h-11z" fill="#fff" stroke="#7b8795"/><path d="M8.5 .5v4h4" fill="none" stroke="#7b8795"/><path d="M3.5 7h7M3.5 9.5h7M3.5 12h5" stroke="#d9531e" stroke-width="1.2"/></svg>
+                    <span id="single-m-name">PG1.m</span>
+                </span>
+                <span class="tree-size"><svg width="10" height="11" viewBox="0 0 10 11"><path d="M1 .8l8 4.7-8 4.7z" fill="#3fae49" stroke="#2a8a35"/></svg></span>
+                <span class="tree-type">M-file: script...</span>
+            </li>
+            <li class="tree-row">
+                <span class="tree-name indent">
+                    <svg class="file-ico" width="14" height="14" viewBox="0 0 14 14"><rect x=".5" y=".5" width="13" height="13" fill="#e8f3e4" stroke="#6b9a5b"/><path d="M1 11l4-5 3 3 2-2 3 4z" fill="#6b9a5b"/><circle cx="10" cy="4" r="1.3" fill="#e5a400"/></svg>
+                    <span>compressed.jpg</span>
+                </span>
+                <span class="tree-size">45 KB</span>
+                <span class="tree-type">JPG File</span>
+            </li>
+            <li class="tree-row">
+                <span class="tree-name indent">
+                    <svg class="file-ico" width="14" height="14" viewBox="0 0 14 14"><rect x=".5" y=".5" width="13" height="13" fill="#e8f3e4" stroke="#6b9a5b"/><path d="M1 11l4-5 3 3 2-2 3 4z" fill="#6b9a5b"/><circle cx="10" cy="4" r="1.3" fill="#e5a400"/></svg>
+                    <span>image.JFIF</span>
+                </span>
+                <span class="tree-size">88 KB</span>
+                <span class="tree-type">JFIF File</span>
+            </li>
+            <li class="tree-row">
+                <span class="tree-name indent">
+                    <svg class="file-ico" width="14" height="14" viewBox="0 0 14 14"><rect x=".5" y=".5" width="13" height="13" fill="#e8f3e4" stroke="#6b9a5b"/><path d="M1 11l4-5 3 3 2-2 3 4z" fill="#6b9a5b"/><circle cx="10" cy="4" r="1.3" fill="#e5a400"/></svg>
+                    <span>LENA.JFIF</span>
+                </span>
+                <span class="tree-size">142 KB</span>
+                <span class="tree-type">JFIF File</span>
+            </li>
+            <li class="tree-row">
+                <span class="tree-name indent">
+                    <svg class="file-ico" width="14" height="14" viewBox="0 0 14 14"><rect x=".5" y=".5" width="13" height="13" fill="#e8f3e4" stroke="#6b9a5b"/><path d="M1 11l4-5 3 3 2-2 3 4z" fill="#6b9a5b"/><circle cx="10" cy="4" r="1.3" fill="#e5a400"/></svg>
+                    <span>lena.png</span>
+                </span>
+                <span class="tree-size">480 KB</span>
+                <span class="tree-type">PNG File</span>
+            </li>
+            <li class="tree-row">
+                <span class="tree-name indent">
+                    <svg class="file-ico" width="14" height="14" viewBox="0 0 14 14"><rect x=".5" y=".5" width="13" height="13" fill="#e8f3e4" stroke="#6b9a5b"/><path d="M1 11l4-5 3 3 2-2 3 4z" fill="#6b9a5b"/><circle cx="10" cy="4" r="1.3" fill="#e5a400"/></svg>
+                    <span>penquin.jpg</span>
+                </span>
+                <span class="tree-size">120 KB</span>
+                <span class="tree-type">JPG File</span>
+            </li>
+            <li class="tree-row">
+                <span class="tree-name indent">
+                    <svg class="file-ico" width="14" height="14" viewBox="0 0 14 14"><rect x=".5" y=".5" width="13" height="13" fill="#fff" stroke="#3b78bd"/><path d="M.5 4.5h13M.5 8.5h13M5 .5v13M9 .5v13" stroke="#9db9dc"/></svg>
+                    <span>results.mat</span>
+                </span>
+                <span class="tree-size">12 KB</span>
+                <span class="tree-type">MAT-file</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Center: Editor + Command Window -->
+    <div class="dock-center-col">
+
+        <div class="dock-panel dock-editor-pane">
+            <div class="dock-header-blue">
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <svg width="14" height="14" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" fill="#fff" stroke="#3b78bd"/><path d="M4 5h8M4 8h8M4 11h5" stroke="#3b78bd"/><path d="M11 9l3 3-1 1-3-3z" fill="#f59e0b"/></svg>
+                    <span class="dock-title" id="editor-title-bar-text">Editor - PG1.m</span>
+                </div>
+                <div class="dock-ctrls">
+                    <svg width="12" height="12" viewBox="0 0 12 12" title="Undock"><rect x="1" y="3" width="7" height="7" fill="none" stroke="currentColor"/><path d="M5 1h6v6" fill="none" stroke="currentColor"/><path d="M11 1L6 6" stroke="currentColor"/></svg>
+                    <span class="dock-x-btn" title="Close">&#x2715;</span>
+                </div>
             </div>
-            <ul class="file-list">
-                <li class="file-item">
-                    <a href="#pg5" class="file-link active" data-target="pg5">
-                        <div class="file-info">
-                            <span class="m-icon">.m</span>
-                            <span>PG5.m - Edge Detection</span>
-                        </div>
-                        <button class="quick-copy-sidebar" data-program="5" title="Copy PG5.m">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                        </button>
-                    </a>
-                </li>
-                <li class="file-item">
-                    <a href="#pg6" class="file-link" data-target="pg6">
-                        <div class="file-info">
-                            <span class="m-icon">.m</span>
-                            <span>PG6.m - Compression</span>
-                        </div>
-                        <button class="quick-copy-sidebar" data-program="6" title="Copy PG6.m">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                        </button>
-                    </a>
-                </li>
-                <li class="file-item">
-                    <a href="#pg7" class="file-link" data-target="pg7">
-                        <div class="file-info">
-                            <span class="m-icon">.m</span>
-                            <span>PG7.m - Subtraction</span>
-                        </div>
-                        <button class="quick-copy-sidebar" data-program="7" title="Copy PG7.m">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                        </button>
-                    </a>
-                </li>
-                <li class="file-item">
-                    <a href="#pg8" class="file-link" data-target="pg8">
-                        <div class="file-info">
-                            <span class="m-icon">.m</span>
-                            <span>PG8.m - Boundary Extr.</span>
-                        </div>
-                        <button class="quick-copy-sidebar" data-program="8" title="Copy PG8.m">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                        </button>
-                    </a>
-                </li>
-            </ul>
-        </aside>
 
-        <!-- Main Content Area -->
-        <main class="editor-workspace">
+            <div class="editor-tabs-strip">
+                <div class="single-file-tab" id="tab-active-prog">
+                    <span id="tab-label">PG1.m</span>
+                    <span class="close-x">&#x2715;</span>
+                </div>
+                <div class="single-file-tab inactive" id="tab-plot-data" title="plot_data.m (Press D to toggle)">
+                    <span>plot_data.m</span>
+                    <span class="close-x">&#x2715;</span>
+                </div>
+                <span class="new-tab-btn">+</span>
+            </div>
 
-            <!-- ==================== PROGRAM 5 ==================== -->
-            <section id="pg5" class="program-container active">
-                <div class="program-header-banner">
-                    <div class="program-title-group">
-                        <h1>
-                            <span>Edge Detection Operators</span>
-                            <span class="program-badge">PG5.m</span>
-                        </h1>
-                        <p class="program-meta">Program 5 &bull; Sobel, Prewitt, Roberts, and Canny Edge Detectors</p>
-                    </div>
-                    <div class="header-actions">
-                        <button class="action-btn copy-master copy-code-btn" data-target-code="code-pg5" title="Copy entire MATLAB script">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                            <span>Copy Code</span>
-                        </button>
-                        <button class="action-btn run-master run-live-btn" data-program="5" title="Simulate MATLAB execution">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                            <span>Run Figure</span>
-                        </button>
+            <div class="editor-text-body">
+                <div class="editor-scroll">
+                    <div class="editor-inner">
+                        <div class="editor-line-gutter" id="editor-gutter"></div>
+                        <pre class="editor-code-view" id="editor-code" contenteditable="true" spellcheck="false"></pre>
                     </div>
                 </div>
-
-                <!-- Aim -->
-                <div class="matlab-card">
-                    <div class="card-heading">
-                        <span class="card-heading-icon">🎯</span>
-                        <span>Aim</span>
-                    </div>
-                    <p class="card-text">
-                        To implement and compare different image edge detection techniques including <strong>Sobel</strong>, <strong>Prewitt</strong>, <strong>Roberts</strong>, and <strong>Canny</strong> operators using MATLAB.
-                    </p>
+                <div class="editor-analyzer-bar" style="position:relative;">
+                    <div class="analyzer-green-indicator" title="No warnings or errors detected"></div>
+                    <div class="analyzer-warn-tick" title="Warning: Statement may not be terminated with semicolon"></div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Procedure -->
-                <div class="matlab-card">
-                    <div class="card-heading">
-                        <span class="card-heading-icon">📋</span>
-                        <span>Procedure</span>
-                    </div>
-                    <ol class="procedure-steps">
-                        <li>Read the input image (<code>'LENA.JFIF'</code>) using <code>imread()</code>.</li>
-                        <li>Check if the image is in RGB format; if so, convert it to grayscale using <code>rgb2gray()</code>.</li>
-                        <li>Apply edge detection operators using MATLAB's built-in <code>edge()</code> function for Sobel, Prewitt, Roberts, and Canny.</li>
-                        <li>Plot and display the original image and all four edge-detected images using <code>subplot()</code> and <code>imshow()</code>.</li>
-                    </ol>
+        <div class="dock-panel dock-command-pane">
+            <div class="dock-header-blue">
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <span class="dock-title">Command Window</span>
+                    <span class="clc-link" id="btn-clear-cw" title="clc">clc</span>
                 </div>
+                <div class="dock-ctrls">
+                    <svg width="12" height="12" viewBox="0 0 12 12" title="Undock"><rect x="1" y="3" width="7" height="7" fill="none" stroke="currentColor"/><path d="M5 1h6v6" fill="none" stroke="currentColor"/><path d="M11 1L6 6" stroke="currentColor"/></svg>
+                    <span class="dock-x-btn" title="Close">&#x2715;</span>
+                </div>
+            </div>
+            <div class="cmd-text-area" id="cmd-console"></div>
+        </div>
 
-                <!-- MATLAB Program -->
-                <div class="matlab-card" style="padding-bottom: 1rem;">
-                    <div class="card-heading" style="justify-content: space-between;">
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <span class="card-heading-icon">💻</span>
-                            <span>MATLAB Program (PG5.m)</span>
-                        </div>
-                    </div>
-                    <div class="code-window">
-                        <div class="code-window-bar">
-                            <div class="editor-tab">
-                                <span style="color:#d9531e;">M</span>
-                                <span>PG5.m</span>
-                            </div>
-                            <button class="code-copy-btn copy-code-btn" data-target-code="code-pg5">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                <span>Copy Code</span>
-                            </button>
-                        </div>
-<pre><code id="code-pg5" class="language-matlab">clc;
+    </div>
+
+    <!-- Right: Workspace + Command History -->
+    <div class="dock-right-col">
+
+        <div class="dock-panel dock-workspace-pane">
+            <div class="dock-header-gray">
+                <span class="dock-title">Workspace</span>
+                <div class="dock-ctrls">
+                    <svg class="dock-menu-ico" width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="none" stroke="currentColor"/><path d="M3.5 5.5l2.5 3 2.5-3z" fill="currentColor"/></svg>
+                    <span class="dock-x-btn" title="Close">&#x2715;</span>
+                </div>
+            </div>
+            <div class="panel-scroll">
+                <table class="ws-grid-table">
+                    <thead>
+                        <tr>
+                            <th style="width:36%;">Name &#x25B4;</th>
+                            <th style="width:44%;">Value</th>
+                            <th style="width:20%; border-right:none;">Class</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ws-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="dock-panel dock-history-pane">
+            <div class="dock-header-gray">
+                <span class="dock-title">Command History</span>
+                <div class="dock-ctrls">
+                    <svg class="dock-menu-ico" width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="none" stroke="currentColor"/><path d="M3.5 5.5l2.5 3 2.5-3z" fill="currentColor"/></svg>
+                    <span class="dock-x-btn" title="Close">&#x2715;</span>
+                </div>
+            </div>
+            <div class="panel-scroll history-list-box" id="history-box"></div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ===== Status bar ===== -->
+<div class="bottom-bar" id="bottom-status-bar" title="Press B or double click to toggle Windows 10 Taskbar">
+    <svg width="18" height="14" viewBox="0 0 18 14"><path d="M2 12V6M6 12V3M10 12V8M14 12V5" stroke="#9aa3ad" stroke-width="2.4"/></svg>
+</div>
+
+<!-- ===== Windows 10 Taskbar ===== -->
+<div class="win-taskbar" id="win-taskbar">
+    <div class="taskbar-left">
+        <button class="win-start-btn" title="Start">
+            <svg width="18" height="18" viewBox="0 0 18 18">
+                <path d="M0 2.5l7.2-1v7H0V2.5zm0 7.8h7.2v7L0 16.3v-6zm8.8-8.9L18 0v8.5H8.8V1.4zm0 8.9H18V19l-9.2-1.3v-7.4z" fill="#ffffff"/>
+            </svg>
+        </button>
+        <div class="win-search-box">
+            <svg width="14" height="14" viewBox="0 0 16 16"><circle cx="6.5" cy="6.5" r="4.5" fill="none" stroke="#888" stroke-width="1.8"/><path d="M10 10l4.5 4.5" stroke="#888" stroke-width="2.2"/></svg>
+            <span>Type here to search</span>
+            <div class="cortana-circle"></div>
+        </div>
+        <button class="taskbar-icon-btn" title="Task View">
+            <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="2" width="9" height="12" fill="none" stroke="#aaa" stroke-width="1.5"/><rect x="6" y="2" width="9" height="12" fill="none" stroke="#aaa" stroke-width="1.5"/></svg>
+        </button>
+        <button class="taskbar-icon-btn" title="File Explorer">
+            <svg width="20" height="20" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z" fill="#ffb900"/><path d="M2 10h20v8c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2v-8z" fill="#ffe082"/></svg>
+        </button>
+        <button class="taskbar-icon-btn" title="Microsoft Store">
+            <svg width="18" height="18" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="15" rx="2" fill="#0078d7"/><path d="M8 6V4a4 4 0 0 1 8 0v2" fill="none" stroke="#fff" stroke-width="2"/><path d="M10 10h4" stroke="#fff" stroke-width="2"/></svg>
+        </button>
+        <button class="taskbar-icon-btn" title="Microsoft Edge">
+            <svg width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#0078d7"/><path d="M12 6a6 6 0 0 1 6 6c0 3.3-2.7 6-6 6a6 6 0 0 1-6-6" fill="#00bcf2"/><circle cx="12" cy="12" r="3" fill="#fff"/></svg>
+        </button>
+        <button class="taskbar-icon-btn" title="Google Chrome">
+            <svg width="19" height="19" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#4285f4"/><circle cx="12" cy="12" r="5" fill="#fff"/><circle cx="12" cy="12" r="3.5" fill="#4285f4"/></svg>
+        </button>
+        <button class="taskbar-icon-btn active-app" title="MATLAB R2018b">
+            <svg width="20" height="20" viewBox="0 0 32 32">
+                <path d="M2 22 11 14 15 9 19 2 24 13 30 22 22 25 12 30Z" fill="#e8742a"/>
+                <path d="M11 14 15 9 19 2 17 18 12 30 2 22Z" fill="#c9501a"/>
+                <path d="M17 18 19 2 24 13 30 22 22 25Z" fill="#f6a05a"/>
+            </svg>
+            <div class="active-pill"></div>
+        </button>
+    </div>
+    <div class="taskbar-right">
+        <svg width="12" height="12" viewBox="0 0 12 12" style="cursor:default;"><path d="M2 8l4-4 4 4" fill="none" stroke="#fff" stroke-width="1.6"/></svg>
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M1 4h12v8H1z" fill="none" stroke="#fff" stroke-width="1.4"/><path d="M14 6v4" stroke="#fff" stroke-width="1.6"/><rect x="2.5" y="5.5" width="7" height="5" fill="#fff"/></svg>
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 12a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm-4.2-3.8a6 6 0 0 1 8.4 0m-10.6-2.2a9 9 0 0 1 12.8 0" fill="none" stroke="#fff" stroke-width="1.4"/></svg>
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M1 5h3l4-3v12l-4-3H1z" fill="#fff"/><path d="M11 5a4 4 0 0 1 0 6M13 3a7 7 0 0 1 0 10" fill="none" stroke="#fff" stroke-width="1.3"/></svg>
+        <span style="font-size:11px; font-weight:600; padding:0 2px;">ENG</span>
+        <div class="taskbar-clock">
+            <span id="tb-time">10:45 AM</span>
+            <span id="tb-date">12 Oct 2023</span>
+        </div>
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M2 2h12v9H5l-3 3z" fill="none" stroke="#fff" stroke-width="1.3"/></svg>
+        <div class="taskbar-show-desktop" title="Show desktop"></div>
+    </div>
+</div>
+
+<div class="stealth-toast" id="toast">Copied script to clipboard</div>
+
+<!-- ===== Documentation dialog ===== -->
+<div class="doc-modal" id="doc-modal">
+    <div class="doc-modal-head">
+        <span id="doc-title">MATLAB Documentation - PG1</span>
+        <span style="cursor:pointer;" id="doc-close">&times;</span>
+    </div>
+    <div class="doc-modal-body" id="doc-body"></div>
+    <div class="doc-modal-foot">
+        <button id="doc-ok">Close</button>
+    </div>
+</div>
+
+<!-- ===== Figure window ===== -->
+<div class="fig-window" id="fig-window">
+    <div class="fig-titlebar">
+        <div class="fig-left">
+            <svg width="16" height="16" viewBox="0 0 32 32"><path d="M2 22 11 14 15 9 19 2 24 13 30 22 22 25 12 30Z" fill="#e8742a"/><path d="M11 14 15 9 19 2 17 18 12 30 2 22Z" fill="#c9501a"/><path d="M17 18 19 2 24 13 30 22 22 25Z" fill="#f6a05a"/></svg>
+            <span id="fig-title">Figure 1</span>
+        </div>
+        <span class="fig-x" id="fig-close">&#x2715;</span>
+    </div>
+    <div class="fig-menubar"><span>File</span><span>Edit</span><span>View</span><span>Insert</span><span>Tools</span><span>Desktop</span><span>Window</span><span>Help</span></div>
+    <div class="fig-grid" id="fig-grid"></div>
+</div>
+
+<script>
+        const programs = {
+            1: {
+                name: "PG1.m",
+                title: "PROGRAM 1 – IMAGE ENHANCEMENT",
+                aim: "To implement image enhancement techniques such as smoothing, sharpening, contrast stretching, gamma correction and sigmoidal enhancement using MATLAB.",
+                procedure: [
+                    "Read the input image using imread('lena.png').",
+                    "Apply average smoothing filter using imfilter and fspecial('average', [3 3]).",
+                    "Perform image sharpening using imsharpen().",
+                    "Apply contrast stretching using imadjust(img, stretchlim(img), []).",
+                    "Perform gamma correction by scaling double image to power 0.7.",
+                    "Implement sigmoidal transformation function.",
+                    "Display all original and enhanced images using subplot and imshow."
+                ],
+                result: "Thus, the image enhancement techniques were successfully implemented and the enhanced images were displayed.",
+                code: `clc;
+clear;
+close all;
+
+img = imread('lena.png');
+
+figure;
+
+% 1.1 Smoothing
+smooth = imfilter(img,fspecial('average',[3 3]));
+
+% 1.2 Sharpening
+sharp = imsharpen(img);
+
+% 1.3.1 Contrast Stretching
+contrast = imadjust(img,stretchlim(img),[]);
+
+% 1.3.2 Gamma Correction
+gamma = im2double(img).^0.7;
+
+% 1.3.3 Sigmoidal Function
+x = im2double(img);
+sigmoid = 1./(1+exp(5*(0.5-x)));
+
+subplot(2,3,1), imshow(img), title('Original');
+subplot(2,3,2), imshow(smooth), title('Smoothing');
+subplot(2,3,3), imshow(sharp), title('Sharpening');
+subplot(2,3,4), imshow(contrast), title('Contrast');
+subplot(2,3,5), imshow(gamma), title('Gamma');
+subplot(2,3,6), imshow(sigmoid), title('Sigmoid');`,
+                workspace: [
+                    { name: 'contrast', val: '512x512x3 uint8', type: 'uint8' },
+                    { name: 'gamma', val: '512x512x3 double', type: 'double' },
+                    { name: 'img', val: '512x512x3 uint8', type: 'uint8' },
+                    { name: 'sharp', val: '512x512x3 uint8', type: 'uint8' },
+                    { name: 'sigmoid', val: '512x512x3 double', type: 'double' },
+                    { name: 'smooth', val: '512x512x3 uint8', type: 'uint8' },
+                    { name: 'x', val: '512x512x3 double', type: 'double' }
+                ],
+                simPlots: ["Original", "Smoothing", "Sharpening", "Contrast", "Gamma", "Sigmoid"]
+            },
+            2: {
+                name: "PG2.m",
+                title: "PROGRAM 2 – HISTOGRAM PROCESSING",
+                aim: "To implement histogram, histogram equalization and histogram specification techniques using MATLAB.",
+                procedure: [
+                    "Read the input image ('lena.png') and reference image ('penquin.jpg').",
+                    "Convert images to grayscale using rgb2gray() if in RGB format.",
+                    "Compute and plot grayscale histogram using imhist().",
+                    "Perform histogram equalization using histeq().",
+                    "Perform histogram specification/matching using imhistmatch().",
+                    "Display original, equalized, and matched images with their histograms."
+                ],
+                result: "Thus, histogram, histogram equalization and histogram specification were successfully implemented and results were displayed.",
+                code: `clc;
+clear;
+close all;
+
+img = imread('lena.png');
+ref = imread('penquin.jpg');
+
+% Convert to grayscale
+if size(img,3)==3
+    img = rgb2gray(img);
+end
+if size(ref,3)==3
+    ref = rgb2gray(ref);
+end
+
+% 2.1 Histogram
+h = imhist(img);
+
+% 2.2 Histogram Equalization
+equal = histeq(img);
+
+% 2.3 Histogram Specification
+match = imhistmatch(img,ref);
+
+figure;
+
+subplot(2,3,1), imshow(img), title('Original');
+subplot(2,3,2), imhist(img), title('Histogram');
+subplot(2,3,3), imshow(equal), title('Equalized');
+subplot(2,3,4), imhist(equal), title('Equalized Histogram');
+subplot(2,3,5), imshow(match), title('Matched');
+subplot(2,3,6), imhist(match), title('Matched Histogram');`,
+                workspace: [
+                    { name: 'equal', val: '512x512 uint8', type: 'uint8' },
+                    { name: 'h', val: '256x1 double', type: 'double' },
+                    { name: 'img', val: '512x512 uint8', type: 'uint8' },
+                    { name: 'match', val: '512x512 uint8', type: 'uint8' },
+                    { name: 'ref', val: '512x512 uint8', type: 'uint8' }
+                ],
+                simPlots: ["Original", "Equalized", "Matched"]
+            },
+            3: {
+                name: "PG3.m",
+                title: "PROGRAM 3 – IMAGE RESTORATION",
+                aim: "To restore a degraded and noisy image using Wiener filtering in MATLAB.",
+                procedure: [
+                    "Read the input image and convert to double precision using im2double().",
+                    "Create a motion blur point spread function (PSF) using fspecial('motion', 20, 45).",
+                    "Degrade the image using circular convolution filter.",
+                    "Simulate additive Gaussian noise using imnoise().",
+                    "Estimate the noise-to-signal ratio (NSR = 0.001 / var(img(:))).",
+                    "Restore degraded image using Wiener deconvolution deconvwnr().",
+                    "Compare Original, Degraded + Noise, and Restored images."
+                ],
+                result: "Thus, the degraded and noisy image was successfully restored using the Wiener filter.",
+                code: `clc;
+clear;
+close all;
+
+% Read image
+img = im2double(imread('penquin.jpg'));
+
+% Motion blur
+psf = fspecial('motion',20,45);
+blur = imfilter(img,psf,'conv','circular');
+
+% Add Gaussian noise
+noise = imnoise(blur,'gaussian',0,0.001);
+
+% Wiener restoration
+nsr = 0.001/var(img(:));
+restored = deconvwnr(noise,psf,nsr);
+
+% Display
+subplot(1,3,1), imshow(img), title('Original');
+subplot(1,3,2), imshow(noise), title('Degraded + Noise');
+subplot(1,3,3), imshow(restored), title('Restored');`,
+                workspace: [
+                    { name: 'blur', val: '380x380 double', type: 'double' },
+                    { name: 'img', val: '380x380 double', type: 'double' },
+                    { name: 'noise', val: '380x380 double', type: 'double' },
+                    { name: 'nsr', val: '0.0162', type: 'double' },
+                    { name: 'psf', val: '15x15 double', type: 'double' },
+                    { name: 'restored', val: '380x380 double', type: 'double' }
+                ],
+                simPlots: ["Original", "Degraded + Noise", "Restored"]
+            },
+            4: {
+                name: "PG4.m",
+                title: "PROGRAM 4 – IMAGE FILTERING",
+                aim: "To implement different image filtering techniques such as Low-pass, High-pass, Median, Sharpening and Gaussian filtering using MATLAB.",
+                procedure: [
+                    "Read the input color image ('lena.png').",
+                    "Apply 3x3 average filter for low-pass smoothing using fspecial('average', [3 3]).",
+                    "Apply Sobel spatial filter for high-pass edge filtering.",
+                    "Apply 2D median filtering channel-by-channel across RGB.",
+                    "Sharpen the image using imsharpen().",
+                    "Perform Gaussian filtering with standard deviation 2 using imgaussfilt().",
+                    "Display and compare all filtered outputs."
+                ],
+                result: "Thus, image filtering techniques (low-pass, high-pass, median, sharpening, gaussian) were successfully implemented.",
+                code: `clc;
+clear;
+close all;
+
+% Read RGB image
+img = imread('lena.png');
+
+% Low-pass
+low = imfilter(img,fspecial('average',[3 3]));
+
+% High-pass
+high = imfilter(img,fspecial('sobel'));
+
+% Median filter
+med(:,:,1) = medfilt2(img(:,:,1));
+med(:,:,2) = medfilt2(img(:,:,2));
+med(:,:,3) = medfilt2(img(:,:,3));
+
+% Sharpen
+sharp = imsharpen(img);
+
+% Gaussian
+gauss = imgaussfilt(img,2);
+
+% Display
+subplot(2,3,1), imshow(img), title('Original');
+subplot(2,3,2), imshow(low), title('Low-pass');
+subplot(2,3,3), imshow(high,[]), title('High-pass');
+subplot(2,3,4), imshow(med), title('Median');
+subplot(2,3,5), imshow(sharp), title('Sharpen');
+subplot(2,3,6), imshow(gauss), title('Gaussian');`,
+                workspace: [
+                    { name: 'gauss', val: '512x512x3 uint8', type: 'uint8' },
+                    { name: 'high', val: '512x512x3 int16', type: 'int16' },
+                    { name: 'img', val: '512x512x3 uint8', type: 'uint8' },
+                    { name: 'low', val: '512x512x3 uint8', type: 'uint8' },
+                    { name: 'med', val: '512x512x3 uint8', type: 'uint8' },
+                    { name: 'sharp', val: '512x512x3 uint8', type: 'uint8' }
+                ],
+                simPlots: ["Original", "Low-pass", "High-pass", "Median", "Sharpen", "Gaussian"]
+            },
+            5: {
+                name: "PG5.m",
+                title: "PROGRAM 5 – EDGE DETECTION OPERATORS",
+                aim: "To implement edge detection techniques using various edge detection operators such as Sobel, Prewitt, Roberts, and Canny in MATLAB.",
+                procedure: [
+                    "Read the input image ('LENA.JFIF').",
+                    "Convert image to grayscale using rgb2gray() if it contains 3 color channels.",
+                    "Apply Sobel edge detection using edge(img, 'sobel').",
+                    "Apply Prewitt edge detection using edge(img, 'prewitt').",
+                    "Apply Roberts edge detection using edge(img, 'roberts').",
+                    "Apply Canny edge detector using edge(img, 'canny').",
+                    "Display original and all edge detected results in a 2x3 subplot."
+                ],
+                result: "Thus, edge detection using Sobel, Prewitt, Roberts, and Canny operators was successfully implemented.",
+                code: `clc;
 clear;
 close all;
 
@@ -819,98 +1237,31 @@ subplot(2,3,1), imshow(img), title('Original');
 subplot(2,3,2), imshow(sobel), title('Sobel');
 subplot(2,3,3), imshow(prewitt), title('Prewitt');
 subplot(2,3,4), imshow(roberts), title('Roberts');
-subplot(2,3,5), imshow(canny), title('Canny');</code></pre>
-                    </div>
-                </div>
-
-                <!-- Result -->
-                <div class="matlab-card" style="border-left: 4px solid var(--matlab-green);">
-                    <div class="result-card-inner">
-                        <div class="result-content">
-                            <div class="result-check">✓</div>
-                            <div>
-                                <h4 style="color:#34d399; font-size:1.1rem; margin-bottom:0.25rem;">Result</h4>
-                                <p class="card-text" style="font-size:0.95rem;">
-                                    Thus, edge detection using Sobel, Prewitt, Roberts, and Canny operators was successfully implemented and the edges were displayed.
-                                </p>
-                            </div>
-                        </div>
-                        <button class="run-live-btn" data-program="5">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                            <span>Live Simulation</span>
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ==================== PROGRAM 6 ==================== -->
-            <section id="pg6" class="program-container">
-                <div class="program-header-banner">
-                    <div class="program-title-group">
-                        <h1>
-                            <span>Image Compression & Ratio</span>
-                            <span class="program-badge">PG6.m</span>
-                        </h1>
-                        <p class="program-meta">Program 6 &bull; JPEG Quality Factor Adjustment & Compression Ratio Calculation</p>
-                    </div>
-                    <div class="header-actions">
-                        <button class="action-btn copy-master copy-code-btn" data-target-code="code-pg6" title="Copy entire MATLAB script">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                            <span>Copy Code</span>
-                        </button>
-                        <button class="action-btn run-master run-live-btn" data-program="6" title="Simulate MATLAB execution">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                            <span>Run Figure</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Aim -->
-                <div class="matlab-card">
-                    <div class="card-heading">
-                        <span class="card-heading-icon">🎯</span>
-                        <span>Aim</span>
-                    </div>
-                    <p class="card-text">
-                        To perform JPEG image compression by specifying the quality factor in MATLAB and calculate the resulting <strong>compression ratio</strong>.
-                    </p>
-                </div>
-
-                <!-- Procedure -->
-                <div class="matlab-card">
-                    <div class="card-heading">
-                        <span class="card-heading-icon">📋</span>
-                        <span>Procedure</span>
-                    </div>
-                    <ol class="procedure-steps">
-                        <li>Read the source image (<code>'LENA.JFIF'</code>) and convert to grayscale if RGB.</li>
-                        <li>Write the image to a file (<code>'compressed.jpg'</code>) with reduced quality (Quality = 30) using <code>imwrite()</code>.</li>
-                        <li>Read the compressed JPEG image back using <code>imread()</code>.</li>
-                        <li>Display both original and compressed images side-by-side using <code>subplot()</code>.</li>
-                        <li>Query file attributes using <code>dir()</code> to extract file sizes in bytes and compute the compression ratio: <code>ratio = original.bytes / compressed.bytes</code>.</li>
-                    </ol>
-                </div>
-
-                <!-- MATLAB Program -->
-                <div class="matlab-card" style="padding-bottom: 1rem;">
-                    <div class="card-heading">
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <span class="card-heading-icon">💻</span>
-                            <span>MATLAB Program (PG6.m)</span>
-                        </div>
-                    </div>
-                    <div class="code-window">
-                        <div class="code-window-bar">
-                            <div class="editor-tab">
-                                <span style="color:#d9531e;">M</span>
-                                <span>PG6.m</span>
-                            </div>
-                            <button class="code-copy-btn copy-code-btn" data-target-code="code-pg6">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                <span>Copy Code</span>
-                            </button>
-                        </div>
-<pre><code id="code-pg6" class="language-matlab">clc;
+subplot(2,3,5), imshow(canny), title('Canny');`,
+                workspace: [
+                    { name: 'canny', val: '512x512 logical', type: 'logical' },
+                    { name: 'img', val: '512x512 uint8', type: 'uint8' },
+                    { name: 'prewitt', val: '512x512 logical', type: 'logical' },
+                    { name: 'roberts', val: '512x512 logical', type: 'logical' },
+                    { name: 'sobel', val: '512x512 logical', type: 'logical' }
+                ],
+                simPlots: ["Original", "Sobel", "Prewitt", "Roberts", "Canny"]
+            },
+            6: {
+                name: "PG6.m",
+                title: "PROGRAM 6 – IMAGE COMPRESSION & RATIO",
+                aim: "To perform image compression using JPEG compression (Quality factor adjustment) and determine the compression ratio in MATLAB.",
+                procedure: [
+                    "Read the source image ('LENA.JFIF') and convert to grayscale.",
+                    "Save compressed image with reduced quality (Quality = 30) using imwrite().",
+                    "Read the compressed image back into workspace using imread().",
+                    "Display original and compressed images side-by-side using subplot(1,2,...).",
+                    "Get file structures of original and compressed files using dir().",
+                    "Compute compression ratio: ratio = original.bytes / compressed.bytes.",
+                    "Print compression ratio using fprintf()."
+                ],
+                result: "Thus, image compression was successfully performed, the images were compared, and compression ratio was calculated.",
+                code: `clc;
 clear;
 close all;
 
@@ -938,98 +1289,29 @@ o = dir('lena.png');
 c = dir('compressed.jpg');
 ratio = o.bytes / c.bytes;
 
-fprintf('Compression Ratio = %.2f\n', ratio);</code></pre>
-                    </div>
-                </div>
-
-                <!-- Result -->
-                <div class="matlab-card" style="border-left: 4px solid var(--matlab-green);">
-                    <div class="result-card-inner">
-                        <div class="result-content">
-                            <div class="result-check">✓</div>
-                            <div>
-                                <h4 style="color:#34d399; font-size:1.1rem; margin-bottom:0.25rem;">Result</h4>
-                                <p class="card-text" style="font-size:0.95rem;">
-                                    Thus, image compression was successfully performed, the images were compared, and the compression ratio was calculated.
-                                </p>
-                            </div>
-                        </div>
-                        <button class="run-live-btn" data-program="6">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                            <span>Live Simulation</span>
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ==================== PROGRAM 7 ==================== -->
-            <section id="pg7" class="program-container">
-                <div class="program-header-banner">
-                    <div class="program-title-group">
-                        <h1>
-                            <span>Image Subtraction</span>
-                            <span class="program-badge">PG7.m</span>
-                        </h1>
-                        <p class="program-meta">Program 7 &bull; Image Arithmetic & Absolute Difference (imabsdiff)</p>
-                    </div>
-                    <div class="header-actions">
-                        <button class="action-btn copy-master copy-code-btn" data-target-code="code-pg7" title="Copy entire MATLAB script">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                            <span>Copy Code</span>
-                        </button>
-                        <button class="action-btn run-master run-live-btn" data-program="7" title="Simulate MATLAB execution">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                            <span>Run Figure</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Aim -->
-                <div class="matlab-card">
-                    <div class="card-heading">
-                        <span class="card-heading-icon">🎯</span>
-                        <span>Aim</span>
-                    </div>
-                    <p class="card-text">
-                        To perform <strong>image subtraction</strong> using <code>imabsdiff()</code> between two images to detect differences and changes in MATLAB.
-                    </p>
-                </div>
-
-                <!-- Procedure -->
-                <div class="matlab-card">
-                    <div class="card-heading">
-                        <span class="card-heading-icon">📋</span>
-                        <span>Procedure</span>
-                    </div>
-                    <ol class="procedure-steps">
-                        <li>Read two input images (<code>'LENA.JFIF'</code> and <code>'image.JFIF'</code>).</li>
-                        <li>Convert both images to grayscale using <code>rgb2gray()</code> if they contain 3 color channels.</li>
-                        <li>Resize the second image to exactly match the dimensions of the first image using <code>imresize()</code>.</li>
-                        <li>Calculate the absolute difference between both images using <code>imabsdiff(img1, img2)</code>.</li>
-                        <li>Display Image 1, Image 2, and the resulting Subtracted Image using <code>subplot()</code>.</li>
-                    </ol>
-                </div>
-
-                <!-- MATLAB Program -->
-                <div class="matlab-card" style="padding-bottom: 1rem;">
-                    <div class="card-heading">
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <span class="card-heading-icon">💻</span>
-                            <span>MATLAB Program (PG7.m)</span>
-                        </div>
-                    </div>
-                    <div class="code-window">
-                        <div class="code-window-bar">
-                            <div class="editor-tab">
-                                <span style="color:#d9531e;">M</span>
-                                <span>PG7.m</span>
-                            </div>
-                            <button class="code-copy-btn copy-code-btn" data-target-code="code-pg7">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                <span>Copy Code</span>
-                            </button>
-                        </div>
-<pre><code id="code-pg7" class="language-matlab">clc;
+fprintf('Compression Ratio = %.2f\\n', ratio);`,
+                workspace: [
+                    { name: 'c', val: '1x1 struct', type: 'struct' },
+                    { name: 'comp', val: '512x512 uint8', type: 'uint8' },
+                    { name: 'img', val: '512x512 uint8', type: 'uint8' },
+                    { name: 'o', val: '1x1 struct', type: 'struct' },
+                    { name: 'ratio', val: '2.84', type: 'double' }
+                ],
+                simPlots: ["Original", "Compressed (Q=30)"]
+            },
+            7: {
+                name: "PG7.m",
+                title: "PROGRAM 7 – IMAGE SUBTRACTION",
+                aim: "To perform image subtraction (absolute difference) between two images in MATLAB.",
+                procedure: [
+                    "Read two input images ('LENA.JFIF' and 'image.JFIF').",
+                    "Convert both images to grayscale if in RGB format using rgb2gray().",
+                    "Resize image 2 to match dimensions of image 1 using imresize(img2, size(img1)).",
+                    "Calculate absolute pixel difference using imabsdiff(img1, img2).",
+                    "Display Image 1, Image 2, and the resulting subtracted difference image."
+                ],
+                result: "Thus, image subtraction using imabsdiff was successfully performed and the subtracted image was displayed.",
+                code: `clc;
 clear;
 close all;
 
@@ -1056,99 +1338,28 @@ result = imabsdiff(img1, img2);
 figure;
 subplot(1,3,1), imshow(img1), title('Image 1');
 subplot(1,3,2), imshow(img2), title('Image 2');
-subplot(1,3,3), imshow(result), title('Subtracted Image');</code></pre>
-                    </div>
-                </div>
-
-                <!-- Result -->
-                <div class="matlab-card" style="border-left: 4px solid var(--matlab-green);">
-                    <div class="result-card-inner">
-                        <div class="result-content">
-                            <div class="result-check">✓</div>
-                            <div>
-                                <h4 style="color:#34d399; font-size:1.1rem; margin-bottom:0.25rem;">Result</h4>
-                                <p class="card-text" style="font-size:0.95rem;">
-                                    Thus, image subtraction using <code>imabsdiff</code> was successfully performed and the subtracted image was displayed.
-                                </p>
-                            </div>
-                        </div>
-                        <button class="run-live-btn" data-program="7">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                            <span>Live Simulation</span>
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ==================== PROGRAM 8 ==================== -->
-            <section id="pg8" class="program-container">
-                <div class="program-header-banner">
-                    <div class="program-title-group">
-                        <h1>
-                            <span>Boundary Extraction</span>
-                            <span class="program-badge">PG8.m</span>
-                        </h1>
-                        <p class="program-meta">Program 8 &bull; Morphological Operations (imerode & Subtraction)</p>
-                    </div>
-                    <div class="header-actions">
-                        <button class="action-btn copy-master copy-code-btn" data-target-code="code-pg8" title="Copy entire MATLAB script">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                            <span>Copy Code</span>
-                        </button>
-                        <button class="action-btn run-master run-live-btn" data-program="8" title="Simulate MATLAB execution">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                            <span>Run Figure</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Aim -->
-                <div class="matlab-card">
-                    <div class="card-heading">
-                        <span class="card-heading-icon">🎯</span>
-                        <span>Aim</span>
-                    </div>
-                    <p class="card-text">
-                        To extract morphological boundaries of an image using <strong>erosion</strong> and set subtraction in MATLAB.
-                    </p>
-                </div>
-
-                <!-- Procedure -->
-                <div class="matlab-card">
-                    <div class="card-heading">
-                        <span class="card-heading-icon">📋</span>
-                        <span>Procedure</span>
-                    </div>
-                    <ol class="procedure-steps">
-                        <li>Read the input image (<code>'LENA.JFIF'</code>) and convert it to grayscale.</li>
-                        <li>Binarize the grayscale image using <code>imbinarize()</code> to obtain binary image <code>bw</code>.</li>
-                        <li>Create a flat disk structuring element of radius 1 using <code>strel('disk', 1)</code>.</li>
-                        <li>Perform morphological erosion on the binary image using <code>imerode(bw, se)</code>.</li>
-                        <li>Compute the morphological boundary by subtracting the eroded image from the binary image: <code>boundary = bw - eroded</code>.</li>
-                        <li>Display the Original, Binary, and Boundary images in a 1x3 subplot grid.</li>
-                    </ol>
-                </div>
-
-                <!-- MATLAB Program -->
-                <div class="matlab-card" style="padding-bottom: 1rem;">
-                    <div class="card-heading">
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <span class="card-heading-icon">💻</span>
-                            <span>MATLAB Program (PG8.m)</span>
-                        </div>
-                    </div>
-                    <div class="code-window">
-                        <div class="code-window-bar">
-                            <div class="editor-tab">
-                                <span style="color:#d9531e;">M</span>
-                                <span>PG8.m</span>
-                            </div>
-                            <button class="code-copy-btn copy-code-btn" data-target-code="code-pg8">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                                <span>Copy Code</span>
-                            </button>
-                        </div>
-<pre><code id="code-pg8" class="language-matlab">clc;
+subplot(1,3,3), imshow(result), title('Subtracted Image');`,
+                workspace: [
+                    { name: 'img1', val: '512x512 uint8', type: 'uint8' },
+                    { name: 'img2', val: '512x512 uint8', type: 'uint8' },
+                    { name: 'result', val: '512x512 uint8', type: 'uint8' }
+                ],
+                simPlots: ["Image 1", "Image 2", "Subtracted Image"]
+            },
+            8: {
+                name: "PG8.m",
+                title: "PROGRAM 8 – MORPHOLOGICAL BOUNDARY EXTRACTION",
+                aim: "To extract boundaries of an image using morphological operations (erosion and subtraction) in MATLAB.",
+                procedure: [
+                    "Read the input image ('LENA.JFIF') and convert to grayscale.",
+                    "Convert grayscale image to binary using imbinarize().",
+                    "Create a flat disk structuring element using strel('disk', 1).",
+                    "Perform morphological erosion on binary image using imerode(bw, se).",
+                    "Extract boundaries by subtracting eroded image from binary image (boundary = bw - eroded).",
+                    "Display Original, Binary, and extracted Boundary images."
+                ],
+                result: "Thus, morphological boundary extraction was successfully performed using erosion and subtraction.",
+                code: `clc;
 clear;
 close all;
 
@@ -1172,137 +1383,536 @@ boundary = bw - eroded;
 figure;
 subplot(1,3,1), imshow(img), title('Original');
 subplot(1,3,2), imshow(bw), title('Binary');
-subplot(1,3,3), imshow(boundary), title('Boundary');</code></pre>
-                    </div>
-                </div>
+subplot(1,3,3), imshow(boundary), title('Boundary');`,
+                workspace: [
+                    { name: 'boundary', val: '512x512 logical', type: 'logical' },
+                    { name: 'bw', val: '512x512 logical', type: 'logical' },
+                    { name: 'eroded', val: '512x512 logical', type: 'logical' },
+                    { name: 'img', val: '512x512 uint8', type: 'uint8' },
+                    { name: 'se', val: '1x1 strel', type: 'strel' }
+                ],
+                simPlots: ["Original", "Binary", "Boundary"]
+            },
+            9: {
+                name: "PG9.m",
+                title: "PROGRAM 9 – MORPHOLOGICAL OPERATIONS (DILATION, EROSION, OPENING, CLOSING)",
+                aim: "To implement basic morphological operations such as Dilation, Erosion, Opening, and Closing on an image using MATLAB.",
+                procedure: [
+                    "Read the input image ('LENA.JFIF') and convert to grayscale.",
+                    "Convert grayscale image to binary using imbinarize().",
+                    "Create a structuring element of radius 2 using strel('disk', 2).",
+                    "Perform erosion using imerode(bw, se).",
+                    "Perform dilation using imdilate(bw, se).",
+                    "Perform opening using imopen(bw, se).",
+                    "Perform closing using imclose(bw, se).",
+                    "Display Original, Binary, Erosion, Dilation, Opening, and Closing images."
+                ],
+                result: "Thus, basic morphological operations (erosion, dilation, opening, and closing) were successfully implemented.",
+                code: `clc;
+clear;
+close all;
 
-                <!-- Result -->
-                <div class="matlab-card" style="border-left: 4px solid var(--matlab-green);">
-                    <div class="result-card-inner">
-                        <div class="result-content">
-                            <div class="result-check">✓</div>
-                            <div>
-                                <h4 style="color:#34d399; font-size:1.1rem; margin-bottom:0.25rem;">Result</h4>
-                                <p class="card-text" style="font-size:0.95rem;">
-                                    Thus, morphological boundary extraction was successfully performed using erosion and subtraction, and the boundary image was displayed.
-                                </p>
-                            </div>
-                        </div>
-                        <button class="run-live-btn" data-program="8">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                            <span>Live Simulation</span>
-                        </button>
-                    </div>
-                </div>
-            </section>
+% Read Image
+img = imread('LENA.JFIF');
 
-        </main>
-    </div>
+% Convert to Gray
+if size(img,3)==3
+    img = rgb2gray(img);
+end
 
-    <!-- Prism.js for syntax highlighting -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-matlab.min.js"></script>
-    
-    <!-- Navigation & Copy Logic -->
-    <script>
+% Convert to Binary
+bw = imbinarize(img);
+
+% Structuring Element
+se = strel('disk',2);
+
+% Morphological Operations
+eroded = imerode(bw,se);
+dilated = imdilate(bw,se);
+opened = imopen(bw,se);
+closed = imclose(bw,se);
+
+% Display
+figure;
+subplot(2,3,1), imshow(img), title('Original');
+subplot(2,3,2), imshow(bw), title('Binary');
+subplot(2,3,3), imshow(eroded), title('Erosion');
+subplot(2,3,4), imshow(dilated), title('Dilation');
+subplot(2,3,5), imshow(opened), title('Opening');
+subplot(2,3,6), imshow(closed), title('Closing');`,
+                workspace: [
+                    { name: 'bw', val: '512x512 logical', type: 'logical' },
+                    { name: 'closed', val: '512x512 logical', type: 'logical' },
+                    { name: 'dilated', val: '512x512 logical', type: 'logical' },
+                    { name: 'eroded', val: '512x512 logical', type: 'logical' },
+                    { name: 'img', val: '512x512 uint8', type: 'uint8' },
+                    { name: 'opened', val: '512x512 logical', type: 'logical' },
+                    { name: 'se', val: '1x1 strel', type: 'strel' }
+                ],
+                simPlots: ["Original", "Binary", "Erosion", "Dilation", "Opening", "Closing"]
+            }
+        };
+
+        let currentProgramIndex = 1;
+        const totalPrograms = 9;
+
+        // ---------- MATLAB syntax coloring (small tokenizer) ----------
+        const KEYWORDS = new Set(['if','else','elseif','end','for','while','switch','case','otherwise',
+            'break','continue','return','function','try','catch','global','persistent','parfor','clc']);
+        const CMD_WORDS = new Set(['hold','grid','close','box','format','axis','clear','clc']);
+        const CMD_ARGS  = new Set(['on','off','all','long','short','tight','equal']);
+
+        function escHtml(s) {
+            return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function highlightLine(line) {
+            let out = '';
+            let i = 0;
+            let prevWord = '';
+            const wordRe = /[A-Za-z_]\w*/y;
+
+            while (i < line.length) {
+                const ch = line[i];
+
+                if (ch === '%') {
+                    out += `<span class="c-com">${escHtml(line.slice(i))}</span>`;
+                    break;
+                }
+
+                if (ch === "'") {
+                    const p = i > 0 ? line[i - 1] : '';
+                    const isTranspose = i > 0 && /[A-Za-z0-9_)\]}'.]/.test(p);
+                    if (!isTranspose) {
+                        let j = i + 1;
+                        while (j < line.length) {
+                            if (line[j] === "'" && line[j + 1] === "'") { j += 2; continue; }
+                            if (line[j] === "'") break;
+                            j++;
+                        }
+                        out += `<span class="c-str">${escHtml(line.slice(i, j + 1))}</span>`;
+                        i = j + 1;
+                        prevWord = '';
+                        continue;
+                    }
+                }
+
+                if (/[A-Za-z_]/.test(ch)) {
+                    wordRe.lastIndex = i;
+                    const w = wordRe.exec(line)[0];
+                    if (KEYWORDS.has(w)) {
+                        out += `<span class="c-kw">${w}</span>`;
+                    } else if (CMD_ARGS.has(w) && CMD_WORDS.has(prevWord)) {
+                        out += `<span class="c-cmd">${w}</span>`;
+                    } else {
+                        out += w;
+                    }
+                    prevWord = w;
+                    i += w.length;
+                    continue;
+                }
+
+                if (/\d/.test(ch)) {
+                    const m = /^\d[\w.]*/.exec(line.slice(i))[0];
+                    out += m;
+                    i += m.length;
+                    prevWord = '';
+                    continue;
+                }
+
+                if (!/\s/.test(ch)) prevWord = '';
+                out += escHtml(ch);
+                i++;
+            }
+            return out;
+        }
+
+        function applySyntax(code) {
+            return code.split('\n').map(highlightLine).join('\n');
+        }
+
+        // ---------- Gutter: line numbers, breakpoint dashes, comment-block folds ----------
+        function buildGutter(lines) {
+            const isCom = lines.map(l => /^\s*%/.test(l));
+            const fold = lines.map(() => '');
+            let i = 0;
+            while (i < lines.length) {
+                if (isCom[i]) {
+                    let j = i;
+                    while (j + 1 < lines.length && isCom[j + 1]) j++;
+                    if (j > i) {
+                        fold[i] = 'start';
+                        for (let k = i + 1; k < j; k++) fold[k] = 'mid';
+                        fold[j] = 'end';
+                    }
+                    i = j + 1;
+                } else {
+                    i++;
+                }
+            }
+            return lines.map((l, idx) => {
+                const exec = l.trim() !== '' && !isCom[idx];
+                return `<span class="g-row"><span class="g-num">${idx + 1}</span><span class="g-dash">${exec ? '-' : ''}</span><span class="g-fold ${fold[idx]}"></span></span>`;
+            }).join('');
+        }
+
+        // ---------- Command window + history ----------
+        let consoleLines = [
+            "&gt;&gt; x = 0:0.1:2*pi;",
+            "&gt;&gt; y = sin(x);",
+            "&gt;&gt; plot(x,y);",
+            "&gt;&gt; hold on;",
+            "&gt;&gt; grid on;",
+            "&gt;&gt; title('Sine Wave');"
+        ];
+
+        function renderConsole() {
+            const el = document.getElementById('cmd-console');
+            el.innerHTML = consoleLines.map(l => `<div class="cmd-line">${l}</div>`).join('') +
+                `<div class="cmd-line"><span class="cmd-fx">fx</span>&gt;&gt; <span class="cmd-cursor-block"></span></div>`;
+            el.scrollTop = el.scrollHeight;
+        }
+
+        function historyStamp() {
+            const d = new Date();
+            let h = d.getHours();
+            const ap = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12;
+            const m = String(d.getMinutes()).padStart(2, '0');
+            return `%-- ${d.getMonth() + 1}/${d.getDate()}/${String(d.getFullYear()).slice(2)} ${h}:${m} ${ap} --%`;
+        }
+
+        function initHistory() {
+            document.getElementById('history-box').innerHTML =
+                `<div class="hist-date-stamp">${historyStamp()}</div>` +
+                `<div class="hist-line">x = 0:0.1:2*pi;</div>` +
+                `<div class="hist-line">y = sin(x);</div>` +
+                `<div class="hist-line">plot(x,y);</div>` +
+                `<div class="hist-line">hold on;</div>` +
+                `<div class="hist-line">grid on;</div>` +
+                `<div class="hist-line">title('Sine Wave');</div>` +
+                `<div class="hist-line">xlabel('Time (s)');</div>` +
+                `<div class="hist-line">ylabel('Amplitude');</div>`;
+        }
+
+        function addHistory(cmd) {
+            const box = document.getElementById('history-box');
+            const div = document.createElement('div');
+            div.className = 'hist-line';
+            div.textContent = cmd;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        // ---------- Theme Switcher ----------
+        let isClassicTheme = false;
+        function toggleTheme() {
+            isClassicTheme = !isClassicTheme;
+            const p = programs[currentProgramIndex];
+            const pName = p ? p.name : 'PG1.m';
+            if (isClassicTheme) {
+                document.body.classList.add('theme-r2012b');
+                const titleStr = `MATLAB R2012b - [${pName}]`;
+                document.title = titleStr;
+                document.getElementById('top-win-title').innerText = titleStr;
+                showThemeToast('Theme: MATLAB R2012b Classic (Press T to toggle back)');
+            } else {
+                document.body.classList.remove('theme-r2012b');
+                const titleStr = `MATLAB R2018b - [${pName}]`;
+                document.title = titleStr;
+                document.getElementById('top-win-title').innerText = titleStr;
+                showThemeToast('Theme: MATLAB R2018b Flat (Press T to toggle)');
+            }
+        }
+        function showThemeToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 1600);
+        }
+
+        // ---------- Camouflage / Stealth Mode (plot_data.m / Untitled.m) ----------
+        let isCamouflage = false;
+        const camouflageProgram = {
+            name: "Untitled.m",
+            altName: "plot_data.m",
+            title: "SINE WAVE PLOT",
+            aim: "Load and plot sine wave data.",
+            procedure: [
+                "Define x range from 0 to 2*pi with 0.1 step.",
+                "Calculate y = sin(x).",
+                "Plot x vs y with grid on.",
+                "Set title to Sine Wave and add axis labels."
+            ],
+            result: "Sine wave plotted successfully.",
+            code: `% Load and plot data
+% Author: JD
+
+clear; clc;
+
+x = 0:0.1:2*pi;
+y = sin(x);
+
+plot(x,y); grid on;
+title('Sine Wave');
+xlabel('Time (s)');
+ylabel('Amplitude');`,
+            workspace: [
+                { name: "x", val: "1x63 double", type: "double" },
+                { name: "y", val: "<63x8 byte>", type: "double" }
+            ],
+            simPlots: ["Sine Wave"]
+        };
+
+        function toggleCamouflage() {
+            isCamouflage = !isCamouflage;
+            if (isCamouflage) {
+                const baseVer = isClassicTheme ? 'MATLAB R2012b' : 'MATLAB R2018b';
+                document.title = `${baseVer} - [Untitled.m]`;
+                document.getElementById('top-win-title').innerText = `${baseVer} - [Untitled.m]`;
+                document.getElementById('editor-title-bar-text').innerText = `Editor - Untitled.m`;
+                document.getElementById('tab-label').innerText = 'Untitled.m';
+                document.getElementById('single-m-name').innerText = 'Untitled.m';
+
+                const tabActive = document.getElementById('tab-active-prog');
+                const tabPlot = document.getElementById('tab-plot-data');
+                tabActive.classList.remove('inactive');
+                tabPlot.classList.add('inactive');
+
+                const lines = camouflageProgram.code.split('\n');
+                document.getElementById('editor-gutter').innerHTML = buildGutter(lines);
+                document.getElementById('editor-code').innerHTML = applySyntax(camouflageProgram.code);
+
+                document.getElementById('ws-table-body').innerHTML = camouflageProgram.workspace.map(w => `
+                    <tr>
+                        <td><span class="var-icon-matlab"></span>${w.name}</td>
+                        <td class="ws-val">${w.val}</td>
+                        <td>${w.type}</td>
+                    </tr>
+                `).join('');
+
+                showThemeToast('Camouflage Active: Untitled.m (Press D or 1-9 to return)');
+            } else {
+                renderProgram(currentProgramIndex);
+                showThemeToast('Lab Program Active (Press D for Camouflage)');
+            }
+        }
+
+        // ---------- Taskbar Clock & Toggle ----------
+        function updateTaskbarClock() {
+            const d = new Date();
+            let h = d.getHours();
+            const ap = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12;
+            const m = String(d.getMinutes()).padStart(2, '0');
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            const dateStr = `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+
+            const tbTime = document.getElementById('tb-time');
+            const tbDate = document.getElementById('tb-date');
+            if (tbTime) tbTime.innerText = `${h}:${m} ${ap}`;
+            if (tbDate) tbDate.innerText = dateStr;
+        }
+
+        function toggleTaskbar() {
+            const tb = document.getElementById('win-taskbar');
+            if (tb) {
+                tb.style.display = (tb.style.display === 'none') ? 'flex' : 'none';
+            }
+        }
+
+        // ---------- Render the active program ----------
+        function renderProgram(id) {
+            isCamouflage = false;
+            currentProgramIndex = id;
+            const p = programs[id];
+            if (!p) return;
+
+            const baseVer = isClassicTheme ? 'MATLAB R2012b' : 'MATLAB R2018b';
+            document.title = `${baseVer} - [${p.name}]`;
+            document.getElementById('top-win-title').innerText = `${baseVer} - [${p.name}]`;
+            document.getElementById('editor-title-bar-text').innerText = `Editor - ${p.name}`;
+            document.getElementById('tab-label').innerText = p.name;
+            document.getElementById('single-m-name').innerText = p.name;
+
+            const lines = p.code.split('\n');
+            document.getElementById('editor-gutter').innerHTML = buildGutter(lines);
+            document.getElementById('editor-code').innerHTML = applySyntax(p.code);
+
+            document.getElementById('ws-table-body').innerHTML = p.workspace.map(w => `
+                <tr>
+                    <td><span class="var-icon-matlab"></span>${w.name}</td>
+                    <td class="ws-val">${w.val}</td>
+                    <td>${w.type}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('doc-title').innerText = `MATLAB Documentation - ${p.name}`;
+            document.getElementById('doc-body').innerHTML = `
+                <h3>${p.title}</h3>
+                <h4>AIM:</h4>
+                <p>${p.aim}</p>
+                <h4>PROCEDURE:</h4>
+                <ol>
+                    ${p.procedure.map(s => `<li>${s}</li>`).join('')}
+                </ol>
+                <h4>RESULT:</h4>
+                <p style="color:#15803d; font-weight:bold;">${p.result}</p>
+                <div class="doc-keys">Keyboard: <b>N</b> next program &bull; <b>P</b> previous &bull; <b>1&ndash;9</b> jump to program &bull; <b>D</b> camouflage &bull; <b>B</b> taskbar &bull; <b>F5</b> run</div>
+            `;
+        }
+
+        // ---------- Copy ----------
+        function copyCode() {
+            const p = isCamouflage ? camouflageProgram : programs[currentProgramIndex];
+            if (!p) return;
+
+            function showToast() {
+                const toast = document.getElementById('toast');
+                toast.style.display = 'block';
+                setTimeout(() => { toast.style.display = 'none'; }, 1000);
+            }
+
+            function fallbackCopy(text) {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.left = '-9999px';
+                ta.style.top = '-9999px';
+                document.body.appendChild(ta);
+                ta.focus();
+                ta.select();
+                try {
+                    document.execCommand('copy');
+                    showToast();
+                } catch(e) {
+                    console.error('Copy failed', e);
+                }
+                document.body.removeChild(ta);
+            }
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(p.code)
+                    .then(showToast)
+                    .catch(() => fallbackCopy(p.code));
+            } else {
+                fallbackCopy(p.code);
+            }
+        }
+
+        // ---------- Run ----------
+        function runSimulation() {
+            const p = isCamouflage ? camouflageProgram : programs[currentProgramIndex];
+            const scriptName = p.name.replace(/\.m$/, '');
+
+            consoleLines.push(`&gt;&gt; ${scriptName}`);
+            if (currentProgramIndex === 6 && !isCamouflage) consoleLines.push('Compression Ratio = 2.84');
+            renderConsole();
+            addHistory(scriptName);
+
+            document.getElementById('fig-title').innerText = `Figure 1`;
+            const grid = document.getElementById('fig-grid');
+            grid.innerHTML = '';
+
+            p.simPlots.forEach(title => {
+                const cell = document.createElement('div');
+                cell.className = 'fig-box';
+                cell.innerHTML = `
+                    <div class="fig-box-title">${title}</div>
+                    <canvas width="170" height="170" style="background:#111; border:1px solid #888;"></canvas>
+                `;
+                const ctx = cell.querySelector('canvas').getContext('2d');
+                ctx.fillStyle = '#222';
+                ctx.fillRect(0, 0, 170, 170);
+                ctx.fillStyle = '#ddd';
+                ctx.beginPath();
+                ctx.arc(85, 85, 52, 0, Math.PI * 2);
+                ctx.fill();
+
+                const t = title.toLowerCase();
+                if (t.includes('edge') || t.includes('sobel') || t.includes('boundary')) {
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(85, 85, 52, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.fillStyle = '#000';
+                    ctx.beginPath();
+                    ctx.arc(85, 85, 50, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                grid.appendChild(cell);
+            });
+
+            document.getElementById('fig-window').style.display = 'flex';
+        }
+
+        // ---------- Navigation ----------
+        function nextProgram() { renderProgram(currentProgramIndex + 1 > totalPrograms ? 1 : currentProgramIndex + 1); }
+        function prevProgram() { renderProgram(currentProgramIndex - 1 < 1 ? totalPrograms : currentProgramIndex - 1); }
+
+        // ---------- Init ----------
         document.addEventListener('DOMContentLoaded', () => {
-            // Tab switching logic
-            const navLinks = document.querySelectorAll('.file-link');
-            const sections = document.querySelectorAll('.program-container');
+            renderProgram(1);
+            initHistory();
+            renderConsole();
 
-            function switchProgram(targetId) {
-                navLinks.forEach(link => {
-                    if (link.getAttribute('data-target') === targetId) {
-                        link.classList.add('active');
-                    } else {
-                        link.classList.remove('active');
-                    }
-                });
+            const ribCopy = document.getElementById('btn-ribbon-copy');
+            if (ribCopy) ribCopy.addEventListener('click', copyCode);
 
-                sections.forEach(sec => {
-                    if (sec.id === targetId) {
-                        sec.classList.add('active');
-                    } else {
-                        sec.classList.remove('active');
-                    }
-                });
-            }
+            const quickCopy = document.getElementById('btn-quick-copy');
+            if (quickCopy) quickCopy.addEventListener('click', copyCode);
 
-            navLinks.forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const targetId = link.getAttribute('data-target');
-                    switchProgram(targetId);
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                });
+            const layoutBtn = document.getElementById('btn-layout-toggle');
+            if (layoutBtn) layoutBtn.addEventListener('click', toggleTheme);
+
+            document.getElementById('btn-ribbon-run').addEventListener('click', runSimulation);
+
+            document.getElementById('btn-clear-cw').addEventListener('click', () => {
+                consoleLines = [];
+                renderConsole();
             });
 
-            // Master Copy Function with clipboard API
-            function copyTextToClipboard(text, triggerBtn) {
-                navigator.clipboard.writeText(text).then(() => {
-                    const originalHTML = triggerBtn.innerHTML;
-                    triggerBtn.classList.add('copied');
-                    triggerBtn.innerHTML = `
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        <span>Copied!</span>
-                    `;
-                    setTimeout(() => {
-                        triggerBtn.classList.remove('copied');
-                        triggerBtn.innerHTML = originalHTML;
-                    }, 2000);
-                }).catch(err => {
-                    console.error('Failed to copy: ', err);
-                });
-            }
-
-            // Copy buttons for code boxes and headers
-            document.querySelectorAll('.copy-code-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const codeId = btn.getAttribute('data-target-code');
-                    const codeElement = document.getElementById(codeId);
-                    if (codeElement) {
-                        copyTextToClipboard(codeElement.textContent, btn);
-                    }
-                });
+            document.getElementById('btn-clearws').addEventListener('click', () => {
+                document.getElementById('ws-table-body').innerHTML = '';
             });
 
-            // Quick copy buttons in sidebar
-            document.querySelectorAll('.quick-copy-sidebar').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const pNum = btn.getAttribute('data-program');
-                    const codeEl = document.getElementById('code-pg' + pNum);
-                    if (codeEl) {
-                        copyTextToClipboard(codeEl.textContent, btn);
-                    }
-                });
+            const docModal = document.getElementById('doc-modal');
+            document.getElementById('btn-quick-help').addEventListener('click', () => { docModal.style.display = 'flex'; });
+            document.getElementById('doc-close').addEventListener('click', () => { docModal.style.display = 'none'; });
+            document.getElementById('doc-ok').addEventListener('click', () => { docModal.style.display = 'none'; });
+
+            document.getElementById('fig-close').addEventListener('click', () => {
+                document.getElementById('fig-window').style.display = 'none';
             });
 
-            // Top ribbon buttons
-            const ribbonRunBtn = document.getElementById('ribbon-run-btn');
-            if (ribbonRunBtn) {
-                ribbonRunBtn.addEventListener('click', () => {
-                    const activeSec = document.querySelector('.program-container.active');
-                    if (activeSec) {
-                        const runBtn = activeSec.querySelector('.run-live-btn');
-                        if (runBtn) runBtn.click();
-                    }
-                });
-            }
+            const tabPlot = document.getElementById('tab-plot-data');
+            if (tabPlot) tabPlot.addEventListener('click', toggleCamouflage);
 
-            const ribbonCopyBtn = document.getElementById('ribbon-copy-btn');
-            if (ribbonCopyBtn) {
-                ribbonCopyBtn.addEventListener('click', () => {
-                    const activeSec = document.querySelector('.program-container.active');
-                    if (activeSec) {
-                        const copyBtn = activeSec.querySelector('.copy-master');
-                        if (copyBtn) copyBtn.click();
-                    }
-                });
-            }
+            const tabActive = document.getElementById('tab-active-prog');
+            if (tabActive) tabActive.addEventListener('click', () => {
+                if (isCamouflage) toggleCamouflage();
+            });
+
+            const bottomBar = document.getElementById('bottom-status-bar');
+            if (bottomBar) bottomBar.addEventListener('dblclick', toggleTaskbar);
+
+            updateTaskbarClock();
+            setInterval(updateTaskbarClock, 1000);
+
+            window.addEventListener('keydown', (e) => {
+                const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+                const isInput = tag === 'input' || tag === 'textarea';
+
+                if (!isInput && (e.key === 't' || e.key === 'T')) { e.preventDefault(); toggleTheme(); return; }
+                if (!isInput && (e.key === 'd' || e.key === 'D')) { e.preventDefault(); toggleCamouflage(); return; }
+                if (!isInput && (e.key === 'b' || e.key === 'B')) { e.preventDefault(); toggleTaskbar(); return; }
+                if (!isInput && (e.key === 'n' || e.key === 'N')) { e.preventDefault(); nextProgram(); return; }
+                if (!isInput && (e.key === 'p' || e.key === 'P')) { e.preventDefault(); prevProgram(); return; }
+                if (!isInput && e.key >= '1' && e.key <= '9') { e.preventDefault(); renderProgram(parseInt(e.key)); return; }
+                if (e.key === 'F5') { e.preventDefault(); runSimulation(); }
+            });
         });
-    </script>
-    <!-- Live Canvas Simulation Engine -->
-    <script src="live-preview.js"></script>
+</script>
 </body>
 </html>
