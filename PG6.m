@@ -1,3 +1,4 @@
+% # 6. IMPLEMENT IMAGE COMPRESSION
 clc;
 clear;
 close all;

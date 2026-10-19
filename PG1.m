@@ -1,3 +1,4 @@
+% # 1. IMPLEMENT IMAGE ENHANCEMENT TECHNIQUE
 clc;
 clear;
 close all;

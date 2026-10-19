@@ -991,7 +991,7 @@
         const programs = {
             1: {
                 name: "PG1.m",
-                title: "PROGRAM 1 – IMAGE ENHANCEMENT",
+                title: "# 1. IMPLEMENT IMAGE ENHANCEMENT TECHNIQUE",
                 aim: "To implement image enhancement techniques such as smoothing, sharpening, contrast stretching, gamma correction and sigmoidal enhancement using MATLAB.",
                 procedure: [
                     "Read the input image using imread('lena.png').",
@@ -1003,7 +1003,8 @@
                     "Display all original and enhanced images using subplot and imshow."
                 ],
                 result: "Thus, the image enhancement techniques were successfully implemented and the enhanced images were displayed.",
-                code: `clc;
+                code: `% # 1. IMPLEMENT IMAGE ENHANCEMENT TECHNIQUE
+clc;
 clear;
 close all;
 
@@ -1046,7 +1047,7 @@ subplot(2,3,6), imshow(sigmoid), title('Sigmoid');`,
             },
             2: {
                 name: "PG2.m",
-                title: "PROGRAM 2 – HISTOGRAM PROCESSING",
+                title: "# 2. HISTOGRAM EQUALIZATION",
                 aim: "To implement histogram, histogram equalization and histogram specification techniques using MATLAB.",
                 procedure: [
                     "Read the input image ('lena.png') and reference image ('penquin.jpg').",
@@ -1057,7 +1058,8 @@ subplot(2,3,6), imshow(sigmoid), title('Sigmoid');`,
                     "Display original, equalized, and matched images with their histograms."
                 ],
                 result: "Thus, histogram, histogram equalization and histogram specification were successfully implemented and results were displayed.",
-                code: `clc;
+                code: `% # 2. HISTOGRAM EQUALIZATION
+clc;
 clear;
 close all;
 
@@ -1100,7 +1102,7 @@ subplot(2,3,6), imhist(match), title('Matched Histogram');`,
             },
             3: {
                 name: "PG3.m",
-                title: "PROGRAM 3 – IMAGE RESTORATION",
+                title: "# 3. IMAGE RESTORATION",
                 aim: "To restore a degraded and noisy image using Wiener filtering in MATLAB.",
                 procedure: [
                     "Read the input image and convert to double precision using im2double().",
@@ -1112,7 +1114,8 @@ subplot(2,3,6), imhist(match), title('Matched Histogram');`,
                     "Compare Original, Degraded + Noise, and Restored images."
                 ],
                 result: "Thus, the degraded and noisy image was successfully restored using the Wiener filter.",
-                code: `clc;
+                code: `% # 3. IMAGE RESTORATION
+clc;
 clear;
 close all;
 
@@ -1146,7 +1149,7 @@ subplot(1,3,3), imshow(restored), title('Restored');`,
             },
             4: {
                 name: "PG4.m",
-                title: "PROGRAM 4 – IMAGE FILTERING",
+                title: "# 4. IMPLEMENT IMAGE FILTERING",
                 aim: "To implement different image filtering techniques such as Low-pass, High-pass, Median, Sharpening and Gaussian filtering using MATLAB.",
                 procedure: [
                     "Read the input color image ('lena.png').",
@@ -1158,7 +1161,8 @@ subplot(1,3,3), imshow(restored), title('Restored');`,
                     "Display and compare all filtered outputs."
                 ],
                 result: "Thus, image filtering techniques (low-pass, high-pass, median, sharpening, gaussian) were successfully implemented.",
-                code: `clc;
+                code: `% # 4. IMPLEMENT IMAGE FILTERING
+clc;
 clear;
 close all;
 
@@ -1201,7 +1205,7 @@ subplot(2,3,6), imshow(gauss), title('Gaussian');`,
             },
             5: {
                 name: "PG5.m",
-                title: "PROGRAM 5 – EDGE DETECTION OPERATORS",
+                title: "# 5. EDGE DETECTION USING OPERATORS (ROBERTS,PREWITTS AND SOBELS OPERATORS)",
                 aim: "To implement edge detection techniques using various edge detection operators such as Sobel, Prewitt, Roberts, and Canny in MATLAB.",
                 procedure: [
                     "Read the input image ('LENA.JFIF').",
@@ -1213,7 +1217,8 @@ subplot(2,3,6), imshow(gauss), title('Gaussian');`,
                     "Display original and all edge detected results in a 2x3 subplot."
                 ],
                 result: "Thus, edge detection using Sobel, Prewitt, Roberts, and Canny operators was successfully implemented.",
-                code: `clc;
+                code: `% # 5. EDGE DETECTION USING OPERATORS (ROBERTS,PREWITTS AND SOBELS OPERATORS)
+clc;
 clear;
 close all;
 
@@ -1249,7 +1254,7 @@ subplot(2,3,5), imshow(canny), title('Canny');`,
             },
             6: {
                 name: "PG6.m",
-                title: "PROGRAM 6 – IMAGE COMPRESSION & RATIO",
+                title: "# 6. IMPLEMENT IMAGE COMPRESSION",
                 aim: "To perform image compression using JPEG compression (Quality factor adjustment) and determine the compression ratio in MATLAB.",
                 procedure: [
                     "Read the source image ('LENA.JFIF') and convert to grayscale.",
@@ -1261,7 +1266,8 @@ subplot(2,3,5), imshow(canny), title('Canny');`,
                     "Print compression ratio using fprintf()."
                 ],
                 result: "Thus, image compression was successfully performed, the images were compared, and compression ratio was calculated.",
-                code: `clc;
+                code: `% # 6. IMPLEMENT IMAGE COMPRESSION
+clc;
 clear;
 close all;
 
@@ -1301,7 +1307,7 @@ fprintf('Compression Ratio = %.2f\\n', ratio);`,
             },
             7: {
                 name: "PG7.m",
-                title: "PROGRAM 7 – IMAGE SUBTRACTION",
+                title: "# 7. IMAGE SUBTRACTION",
                 aim: "To perform image subtraction (absolute difference) between two images in MATLAB.",
                 procedure: [
                     "Read two input images ('LENA.JFIF' and 'image.JFIF').",
@@ -1311,7 +1317,8 @@ fprintf('Compression Ratio = %.2f\\n', ratio);`,
                     "Display Image 1, Image 2, and the resulting subtracted difference image."
                 ],
                 result: "Thus, image subtraction using imabsdiff was successfully performed and the subtracted image was displayed.",
-                code: `clc;
+                code: `% # 7. IMAGE SUBTRACTION
+clc;
 clear;
 close all;
 
@@ -1348,7 +1355,7 @@ subplot(1,3,3), imshow(result), title('Subtracted Image');`,
             },
             8: {
                 name: "PG8.m",
-                title: "PROGRAM 8 – MORPHOLOGICAL BOUNDARY EXTRACTION",
+                title: "# 8. BOUNDARY EXTRACTION USING MORPHOLOGY",
                 aim: "To extract boundaries of an image using morphological operations (erosion and subtraction) in MATLAB.",
                 procedure: [
                     "Read the input image ('LENA.JFIF') and convert to grayscale.",
@@ -1359,7 +1366,8 @@ subplot(1,3,3), imshow(result), title('Subtracted Image');`,
                     "Display Original, Binary, and extracted Boundary images."
                 ],
                 result: "Thus, morphological boundary extraction was successfully performed using erosion and subtraction.",
-                code: `clc;
+                code: `% # 8. BOUNDARY EXTRACTION USING MORPHOLOGY
+clc;
 clear;
 close all;
 
@@ -1395,61 +1403,80 @@ subplot(1,3,3), imshow(boundary), title('Boundary');`,
             },
             9: {
                 name: "PG9.m",
-                title: "PROGRAM 9 – MORPHOLOGICAL OPERATIONS (DILATION, EROSION, OPENING, CLOSING)",
-                aim: "To implement basic morphological operations such as Dilation, Erosion, Opening, and Closing on an image using MATLAB.",
+                title: "# 9. IMAGE SEGMENTATION",
+                aim: "To perform image segmentation using thresholding, edge detection (Canny), K-means clustering, and watershed segmentation in MATLAB.",
                 procedure: [
-                    "Read the input image ('LENA.JFIF') and convert to grayscale.",
-                    "Convert grayscale image to binary using imbinarize().",
-                    "Create a structuring element of radius 2 using strel('disk', 2).",
-                    "Perform erosion using imerode(bw, se).",
-                    "Perform dilation using imdilate(bw, se).",
-                    "Perform opening using imopen(bw, se).",
-                    "Perform closing using imclose(bw, se).",
-                    "Display Original, Binary, Erosion, Dilation, Opening, and Closing images."
+                    "Read the input image ('lena.png') and convert to grayscale.",
+                    "Perform global thresholding using graythresh() and imbinarize().",
+                    "Perform edge detection using Canny operator edge(grayImage, 'canny').",
+                    "Perform K-means clustering segmentation with 3 clusters using imsegkmeans().",
+                    "Perform watershed segmentation using gradient magnitude and regional minima.",
+                    "Display Original Image, Thresholding, Edge Detection, K-means Clustering, and Watershed Segmentation."
                 ],
-                result: "Thus, basic morphological operations (erosion, dilation, opening, and closing) were successfully implemented.",
-                code: `clc;
+                result: "Thus, image segmentation techniques (thresholding, Canny edge detection, K-means clustering, and watershed segmentation) were successfully implemented.",
+                code: `% # 9. IMAGE SEGMENTATION
+clc;
 clear;
 close all;
 
-% Read Image
-img = imread('LENA.JFIF');
+% Read sample image
+img = imread('lena.png');
 
-% Convert to Gray
-if size(img,3)==3
-    img = rgb2gray(img);
+% Convert to grayscale
+if size(img,3) == 3
+    grayImage = rgb2gray(img);
+else
+    grayImage = img;
 end
 
-% Convert to Binary
-bw = imbinarize(img);
-
-% Structuring Element
-se = strel('disk',2);
-
-% Morphological Operations
-eroded = imerode(bw,se);
-dilated = imdilate(bw,se);
-opened = imopen(bw,se);
-closed = imclose(bw,se);
-
-% Display
+% Display original image
 figure;
-subplot(2,3,1), imshow(img), title('Original');
-subplot(2,3,2), imshow(bw), title('Binary');
-subplot(2,3,3), imshow(eroded), title('Erosion');
-subplot(2,3,4), imshow(dilated), title('Dilation');
-subplot(2,3,5), imshow(opened), title('Opening');
-subplot(2,3,6), imshow(closed), title('Closing');`,
+subplot(2,2,1);
+imshow(img);
+title('Original Image');
+
+% Thresholding
+level = graythresh(grayImage);
+binaryImage = imbinarize(grayImage, level);
+subplot(2,2,2);
+imshow(binaryImage);
+title('Thresholding');
+
+% Edge Detection using Canny
+edges = edge(grayImage, 'canny');
+subplot(2,2,3);
+imshow(edges);
+title('Edge Detection');
+
+% K-means Clustering
+numClusters = 3;
+[clusterIdx, ~] = imsegkmeans(grayImage, numClusters);
+clusteredImage = label2rgb(clusterIdx);
+subplot(2,2,4);
+imshow(clusteredImage);
+title('K-means Clustering');
+
+% Watershed Segmentation
+gradientImage = imgradient(grayImage);
+markerImage = imextendedmin(gradientImage, 0.1);
+watershedImage = watershed(gradientImage);
+watershedImage(gradientImage == 0) = 0;
+watershedRGB = label2rgb(watershedImage, 'jet', 'k', 'shuffle');
+
+figure;
+imshow(watershedRGB);
+title('Watershed Segmentation');`,
                 workspace: [
-                    { name: 'bw', val: '512x512 logical', type: 'logical' },
-                    { name: 'closed', val: '512x512 logical', type: 'logical' },
-                    { name: 'dilated', val: '512x512 logical', type: 'logical' },
-                    { name: 'eroded', val: '512x512 logical', type: 'logical' },
+                    { name: 'binaryImage', val: '512x512 logical', type: 'logical' },
+                    { name: 'clusterIdx', val: '512x512 int32', type: 'int32' },
+                    { name: 'clusteredImage', val: '512x512x3 uint8', type: 'uint8' },
+                    { name: 'edges', val: '512x512 logical', type: 'logical' },
+                    { name: 'grayImage', val: '512x512 uint8', type: 'uint8' },
                     { name: 'img', val: '512x512 uint8', type: 'uint8' },
-                    { name: 'opened', val: '512x512 logical', type: 'logical' },
-                    { name: 'se', val: '1x1 strel', type: 'strel' }
+                    { name: 'level', val: '0.4667', type: 'double' },
+                    { name: 'watershedRGB', val: '512x512x3 uint8', type: 'uint8' }
                 ],
-                simPlots: ["Original", "Binary", "Erosion", "Dilation", "Opening", "Closing"]
+                simPlots: ["Original Image", "Thresholding", "Edge Detection", "K-means Clustering", "Watershed Segmentation"]
             }
         };
 
@@ -1475,7 +1502,7 @@ subplot(2,3,6), imshow(closed), title('Closing');`,
             while (i < line.length) {
                 const ch = line[i];
 
-                if (ch === '%') {
+                if (ch === '%' || ch === '#') {
                     out += `<span class="c-com">${escHtml(line.slice(i))}</span>`;
                     break;
                 }
@@ -1533,7 +1560,7 @@ subplot(2,3,6), imshow(closed), title('Closing');`,
 
         // ---------- Gutter: line numbers, breakpoint dashes, comment-block folds ----------
         function buildGutter(lines) {
-            const isCom = lines.map(l => /^\s*%/.test(l));
+            const isCom = lines.map(l => /^\s*[%#]/.test(l));
             const fold = lines.map(() => '');
             let i = 0;
             while (i < lines.length) {
@@ -1758,8 +1785,25 @@ ylabel('Amplitude');`,
                 </ol>
                 <h4>RESULT:</h4>
                 <p style="color:#15803d; font-weight:bold;">${p.result}</p>
-                <div class="doc-keys">Keyboard: <b>N</b> next program &bull; <b>P</b> previous &bull; <b>1&ndash;9</b> jump to program &bull; <b>D</b> camouflage &bull; <b>B</b> taskbar &bull; <b>F5</b> run</div>
+                <div class="doc-keys">Keyboard: <b>N</b> next program &bull; <b>P</b> previous &bull; <b>1&ndash;9</b> jump &bull; <b>C</b> copy executable code &bull; <b>D</b> camouflage &bull; <b>B</b> taskbar &bull; <b>F5</b> run</div>
             `;
+        }
+
+        // ---------- Filter only executable code (omit # headings) ----------
+        function getExecutableCode(rawCode) {
+            const lines = rawCode.split('\n');
+            let startIndex = 0;
+            while (startIndex < lines.length) {
+                const trimmed = lines[startIndex].trim();
+                if (/^(%\s*#|#|%\s*PROGRAM|%\s*EXP)/i.test(trimmed)) {
+                    startIndex++;
+                } else if (trimmed === '' && startIndex > 0) {
+                    startIndex++;
+                } else {
+                    break;
+                }
+            }
+            return lines.slice(startIndex).join('\n');
         }
 
         // ---------- Copy ----------
@@ -1767,10 +1811,13 @@ ylabel('Amplitude');`,
             const p = isCamouflage ? camouflageProgram : programs[currentProgramIndex];
             if (!p) return;
 
+            const codeToCopy = getExecutableCode(p.code);
+
             function showToast() {
                 const toast = document.getElementById('toast');
+                toast.innerText = 'Copied executable code to clipboard';
                 toast.style.display = 'block';
-                setTimeout(() => { toast.style.display = 'none'; }, 1000);
+                setTimeout(() => { toast.style.display = 'none'; }, 1100);
             }
 
             function fallbackCopy(text) {
@@ -1792,11 +1839,11 @@ ylabel('Amplitude');`,
             }
 
             if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(p.code)
+                navigator.clipboard.writeText(codeToCopy)
                     .then(showToast)
-                    .catch(() => fallbackCopy(p.code));
+                    .catch(() => fallbackCopy(codeToCopy));
             } else {
-                fallbackCopy(p.code);
+                fallbackCopy(codeToCopy);
             }
         }
 
@@ -1907,6 +1954,7 @@ ylabel('Amplitude');`,
                 if (!isInput && (e.key === 't' || e.key === 'T')) { e.preventDefault(); toggleTheme(); return; }
                 if (!isInput && (e.key === 'd' || e.key === 'D')) { e.preventDefault(); toggleCamouflage(); return; }
                 if (!isInput && (e.key === 'b' || e.key === 'B')) { e.preventDefault(); toggleTaskbar(); return; }
+                if (!isInput && (e.key === 'c' || e.key === 'C')) { e.preventDefault(); copyCode(); return; }
                 if (!isInput && (e.key === 'n' || e.key === 'N')) { e.preventDefault(); nextProgram(); return; }
                 if (!isInput && (e.key === 'p' || e.key === 'P')) { e.preventDefault(); prevProgram(); return; }
                 if (!isInput && e.key >= '1' && e.key <= '9') { e.preventDefault(); renderProgram(parseInt(e.key)); return; }

@@ -1,3 +1,4 @@
+% # 2. HISTOGRAM EQUALIZATION
 clc;
 clear;
 close all;

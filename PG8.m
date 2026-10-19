@@ -1,3 +1,4 @@
+% # 8. BOUNDARY EXTRACTION USING MORPHOLOGY
 clc;
 clear;
 close all;

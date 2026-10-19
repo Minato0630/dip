@@ -1,3 +1,4 @@
+% # 3. IMAGE RESTORATION
 clc;
 clear;
 close all;
