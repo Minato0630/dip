@@ -4,7 +4,7 @@ clear;
 close all;
 
 % Read image
-img = im2double(imread('penquin.jpg'));
+img = im2double(imread('lena.jpg'));
 
 % Motion blur
 psf = fspecial('motion',20,45);

@@ -3,7 +3,7 @@ clc;
 clear;
 close all;
 
-img = imread('lena.png');
+img = imread('lena.jpg');
 
 figure;
 
@@ -22,6 +22,10 @@ gamma = im2double(img).^0.7;
 % 1.3.3 Sigmoidal Function
 x = im2double(img);
 sigmoid = 1./(1+exp(5*(0.5-x)));
+
+% 1.4 Basic Image Operations (Spatial & Intensity Resolution)
+res_128 = imresize(img, [128 128]);
+int_4bit = floor(double(img)/16)*16;
 
 subplot(2,3,1), imshow(img), title('Original');
 subplot(2,3,2), imshow(smooth), title('Smoothing');

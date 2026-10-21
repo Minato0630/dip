@@ -4,8 +4,8 @@ clear;
 close all;
 
 % Read Images
-img1 = imread('LENA.JFIF');
-img2 = imread('image.JFIF');
+img1 = imread('lena.jpg');
+img2 = imread('LENA.jfif');
 
 % Convert to Gray
 if size(img1,3)==3

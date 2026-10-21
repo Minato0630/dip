@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="html-title">MATLAB R2018b - [PG1.m]</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M2 22 11 14 15 9 19 2 24 13 30 22 22 25 12 30Z' fill='%23e8742a'/><path d='M11 14 15 9 19 2 17 18 12 30 2 22Z' fill='%23c9501a'/><path d='M17 18 19 2 24 13 30 22 22 25Z' fill='%23f6a05a'/></svg>">
+<script src="lena-data.js"></script>
 
 <style>
     :root {
@@ -994,7 +995,7 @@
                 title: "# 1. IMPLEMENT IMAGE ENHANCEMENT TECHNIQUE",
                 aim: "To implement image enhancement techniques such as smoothing, sharpening, contrast stretching, gamma correction and sigmoidal enhancement using MATLAB.",
                 procedure: [
-                    "Read the input image using imread('lena.png').",
+                    "Read the input image using imread('lena.jpg').",
                     "Apply average smoothing filter using imfilter and fspecial('average', [3 3]).",
                     "Perform image sharpening using imsharpen().",
                     "Apply contrast stretching using imadjust(img, stretchlim(img), []).",
@@ -1008,7 +1009,7 @@ clc;
 clear;
 close all;
 
-img = imread('lena.png');
+img = imread('lena.jpg');
 
 figure;
 
@@ -1028,6 +1029,10 @@ gamma = im2double(img).^0.7;
 x = im2double(img);
 sigmoid = 1./(1+exp(5*(0.5-x)));
 
+% 1.4 Basic Image Operations (Spatial & Intensity Resolution)
+res_128 = imresize(img, [128 128]);
+int_4bit = floor(double(img)/16)*16;
+
 subplot(2,3,1), imshow(img), title('Original');
 subplot(2,3,2), imshow(smooth), title('Smoothing');
 subplot(2,3,3), imshow(sharp), title('Sharpening');
@@ -1038,6 +1043,8 @@ subplot(2,3,6), imshow(sigmoid), title('Sigmoid');`,
                     { name: 'contrast', val: '512x512x3 uint8', type: 'uint8' },
                     { name: 'gamma', val: '512x512x3 double', type: 'double' },
                     { name: 'img', val: '512x512x3 uint8', type: 'uint8' },
+                    { name: 'int_4bit', val: '512x512x3 double', type: 'double' },
+                    { name: 'res_128', val: '128x128x3 uint8', type: 'uint8' },
                     { name: 'sharp', val: '512x512x3 uint8', type: 'uint8' },
                     { name: 'sigmoid', val: '512x512x3 double', type: 'double' },
                     { name: 'smooth', val: '512x512x3 uint8', type: 'uint8' },
@@ -1048,23 +1055,24 @@ subplot(2,3,6), imshow(sigmoid), title('Sigmoid');`,
             2: {
                 name: "PG2.m",
                 title: "# 2. HISTOGRAM EQUALIZATION",
-                aim: "To implement histogram, histogram equalization and histogram specification techniques using MATLAB.",
+                aim: "To implement histogram, histogram equalization, histogram specification, and local histogram equalization using MATLAB.",
                 procedure: [
-                    "Read the input image ('lena.png') and reference image ('penquin.jpg').",
+                    "Read the input image ('lena.jpg') and reference image ('LENA.jfif').",
                     "Convert images to grayscale using rgb2gray() if in RGB format.",
                     "Compute and plot grayscale histogram using imhist().",
-                    "Perform histogram equalization using histeq().",
+                    "Perform global histogram equalization using histeq().",
                     "Perform histogram specification/matching using imhistmatch().",
-                    "Display original, equalized, and matched images with their histograms."
+                    "Perform local histogram equalization using adapthisteq().",
+                    "Display original, equalized, matched, and local equalized images with histograms."
                 ],
-                result: "Thus, histogram, histogram equalization and histogram specification were successfully implemented and results were displayed.",
+                result: "Thus, histogram, histogram equalization, histogram specification and local histogram equalization were successfully implemented and results were displayed.",
                 code: `% # 2. HISTOGRAM EQUALIZATION
 clc;
 clear;
 close all;
 
-img = imread('lena.png');
-ref = imread('penquin.jpg');
+img = imread('lena.jpg');
+ref = imread('LENA.jfif');
 
 % Convert to grayscale
 if size(img,3)==3
@@ -1077,35 +1085,39 @@ end
 % 2.1 Histogram
 h = imhist(img);
 
-% 2.2 Histogram Equalization
+% 2.2 Global Histogram Equalization
 equal = histeq(img);
 
-% 2.3 Histogram Specification
+% 2.3 Histogram Specification (Matching)
 match = imhistmatch(img,ref);
+
+% 2.4 Local Histogram Equalization
+local_equal = adapthisteq(img);
 
 figure;
 
 subplot(2,3,1), imshow(img), title('Original');
 subplot(2,3,2), imhist(img), title('Histogram');
-subplot(2,3,3), imshow(equal), title('Equalized');
-subplot(2,3,4), imhist(equal), title('Equalized Histogram');
+subplot(2,3,3), imshow(equal), title('Global Equalized');
+subplot(2,3,4), imhist(equal), title('Equalized Hist');
 subplot(2,3,5), imshow(match), title('Matched');
-subplot(2,3,6), imhist(match), title('Matched Histogram');`,
+subplot(2,3,6), imshow(local_equal), title('Local Equalized');`,
                 workspace: [
                     { name: 'equal', val: '512x512 uint8', type: 'uint8' },
                     { name: 'h', val: '256x1 double', type: 'double' },
                     { name: 'img', val: '512x512 uint8', type: 'uint8' },
+                    { name: 'local_equal', val: '512x512 uint8', type: 'uint8' },
                     { name: 'match', val: '512x512 uint8', type: 'uint8' },
                     { name: 'ref', val: '512x512 uint8', type: 'uint8' }
                 ],
-                simPlots: ["Original", "Equalized", "Matched"]
+                simPlots: ["Original", "Histogram", "Global Equalized", "Equalized Hist", "Matched", "Local Equalized"]
             },
             3: {
                 name: "PG3.m",
                 title: "# 3. IMAGE RESTORATION",
                 aim: "To restore a degraded and noisy image using Wiener filtering in MATLAB.",
                 procedure: [
-                    "Read the input image and convert to double precision using im2double().",
+                    "Read the input image ('lena.jpg') and convert to double precision using im2double().",
                     "Create a motion blur point spread function (PSF) using fspecial('motion', 20, 45).",
                     "Degrade the image using circular convolution filter.",
                     "Simulate additive Gaussian noise using imnoise().",
@@ -1120,7 +1132,7 @@ clear;
 close all;
 
 % Read image
-img = im2double(imread('penquin.jpg'));
+img = im2double(imread('lena.jpg'));
 
 % Motion blur
 psf = fspecial('motion',20,45);
@@ -1152,7 +1164,7 @@ subplot(1,3,3), imshow(restored), title('Restored');`,
                 title: "# 4. IMPLEMENT IMAGE FILTERING",
                 aim: "To implement different image filtering techniques such as Low-pass, High-pass, Median, Sharpening and Gaussian filtering using MATLAB.",
                 procedure: [
-                    "Read the input color image ('lena.png').",
+                    "Read the input color image ('lena.jpg').",
                     "Apply 3x3 average filter for low-pass smoothing using fspecial('average', [3 3]).",
                     "Apply Sobel spatial filter for high-pass edge filtering.",
                     "Apply 2D median filtering channel-by-channel across RGB.",
@@ -1167,7 +1179,7 @@ clear;
 close all;
 
 % Read RGB image
-img = imread('lena.png');
+img = imread('lena.jpg');
 
 % Low-pass
 low = imfilter(img,fspecial('average',[3 3]));
@@ -1206,111 +1218,140 @@ subplot(2,3,6), imshow(gauss), title('Gaussian');`,
             5: {
                 name: "PG5.m",
                 title: "# 5. EDGE DETECTION USING OPERATORS (ROBERTS,PREWITTS AND SOBELS OPERATORS)",
-                aim: "To implement edge detection techniques using various edge detection operators such as Sobel, Prewitt, Roberts, and Canny in MATLAB.",
+                aim: "To implement edge detection techniques using built-in functions, without built-in functions, and simple boundary extraction in MATLAB.",
                 procedure: [
-                    "Read the input image ('LENA.JFIF').",
-                    "Convert image to grayscale using rgb2gray() if it contains 3 color channels.",
-                    "Apply Sobel edge detection using edge(img, 'sobel').",
-                    "Apply Prewitt edge detection using edge(img, 'prewitt').",
-                    "Apply Roberts edge detection using edge(img, 'roberts').",
-                    "Apply Canny edge detector using edge(img, 'canny').",
-                    "Display original and all edge detected results in a 2x3 subplot."
+                    "Read the input image ('lena.jpg') and convert to grayscale.",
+                    "Apply built-in edge detection using Sobel, Canny, Prewitt, and Laplacian of Gaussian (LoG).",
+                    "Implement edge detection without built-in functions using Sobel horizontal and vertical gradient masks.",
+                    "Perform simple boundary extraction using morphological erosion.",
+                    "Display original and all edge detected and boundary extracted results in subplot."
                 ],
-                result: "Thus, edge detection using Sobel, Prewitt, Roberts, and Canny operators was successfully implemented.",
+                result: "Thus, edge detection using built-in functions, without built-in functions, and boundary extraction were successfully implemented.",
                 code: `% # 5. EDGE DETECTION USING OPERATORS (ROBERTS,PREWITTS AND SOBELS OPERATORS)
 clc;
 clear;
 close all;
 
 % Read Image
-img = imread('LENA.JFIF');
+img = imread('lena.jpg');
 
 % Convert to Gray
 if size(img,3)==3
     img = rgb2gray(img);
 end
 
-% Edge Detection
+% 5.1 Using Built-in Functions
 sobel = edge(img,'sobel');
 prewitt = edge(img,'prewitt');
 roberts = edge(img,'roberts');
 canny = edge(img,'canny');
 
+% 5.2 Without using Built-in Functions (Sobel Gradient)
+C = double(img);
+Gx = conv2(C, [-1 0 1; -2 0 2; -1 0 1], 'same');
+Gy = conv2(C, [-1 -2 -1; 0 0 0; 1 2 1], 'same');
+sobel_manual = uint8(sqrt(Gx.^2 + Gy.^2));
+
+% 5.3 Simple Boundary Extraction
+se = strel('disk',2);
+boundary_simple = img - imerode(img,se);
+
 % Display
 figure;
 subplot(2,3,1), imshow(img), title('Original');
-subplot(2,3,2), imshow(sobel), title('Sobel');
-subplot(2,3,3), imshow(prewitt), title('Prewitt');
-subplot(2,3,4), imshow(roberts), title('Roberts');
-subplot(2,3,5), imshow(canny), title('Canny');`,
+subplot(2,3,2), imshow(sobel), title('Sobel Built-in');
+subplot(2,3,3), imshow(canny), title('Canny Built-in');
+subplot(2,3,4), imshow(prewitt), title('Prewitt Built-in');
+subplot(2,3,5), imshow(sobel_manual), title('Sobel Without Built-in');
+subplot(2,3,6), imshow(boundary_simple), title('Boundary Extracted');`,
                 workspace: [
+                    { name: 'boundary_simple', val: '512x512 uint8', type: 'uint8' },
                     { name: 'canny', val: '512x512 logical', type: 'logical' },
                     { name: 'img', val: '512x512 uint8', type: 'uint8' },
                     { name: 'prewitt', val: '512x512 logical', type: 'logical' },
                     { name: 'roberts', val: '512x512 logical', type: 'logical' },
-                    { name: 'sobel', val: '512x512 logical', type: 'logical' }
+                    { name: 'sobel', val: '512x512 logical', type: 'logical' },
+                    { name: 'sobel_manual', val: '512x512 uint8', type: 'uint8' }
                 ],
-                simPlots: ["Original", "Sobel", "Prewitt", "Roberts", "Canny"]
+                simPlots: ["Original", "Sobel Built-in", "Canny Built-in", "Prewitt Built-in", "Sobel Without Built-in", "Boundary Extracted"]
             },
             6: {
                 name: "PG6.m",
                 title: "# 6. IMPLEMENT IMAGE COMPRESSION",
-                aim: "To perform image compression using JPEG compression (Quality factor adjustment) and determine the compression ratio in MATLAB.",
+                aim: "To implement Block Truncation Coding (BTC), Bitplane Coding, and JPEG compression ratio in MATLAB.",
                 procedure: [
-                    "Read the source image ('LENA.JFIF') and convert to grayscale.",
-                    "Save compressed image with reduced quality (Quality = 30) using imwrite().",
-                    "Read the compressed image back into workspace using imread().",
-                    "Display original and compressed images side-by-side using subplot(1,2,...).",
-                    "Get file structures of original and compressed files using dir().",
-                    "Compute compression ratio: ratio = original.bytes / compressed.bytes.",
-                    "Print compression ratio using fprintf()."
+                    "Read the source image ('lena.jpg') and convert to grayscale.",
+                    "Implement Block Truncation Coding (BTC) by dividing image into blocks and applying binary thresholding.",
+                    "Implement Bitplane Coding by extracting and reconstructing all 8 bit planes using bitget().",
+                    "Compress image with reduced JPEG quality and determine the compression ratio.",
+                    "Display original, BTC decoded, bitplane recovered, and compressed images."
                 ],
-                result: "Thus, image compression was successfully performed, the images were compared, and compression ratio was calculated.",
+                result: "Thus, image compression using Block Truncation Coding, Bitplane Coding, and JPEG compression ratio was successfully performed.",
                 code: `% # 6. IMPLEMENT IMAGE COMPRESSION
 clc;
 clear;
 close all;
 
 % Read Image
-img = imread('LENA.JFIF');
+img = imread('lena.jpg');
 
 % Convert to Gray
 if size(img,3)==3
     img = rgb2gray(img);
 end
 
-% Compress and Save
-imwrite(img,'compressed.jpg','Quality',30);
+% 6.1 Block Truncation Coding (BTC)
+k = 4;
+x1 = double(img);
+[n, m] = size(x1);
+out_btc = zeros(n, m);
+for i = 1:k:n
+    for j = 1:k:m
+        blk = x1(i:min(i+k-1,n), j:min(j+k-1,m));
+        mn = mean(blk(:));
+        bm = blk >= mn;
+        hi = mean(blk(bm)); if isnan(hi), hi = mn; end
+        lo = mean(blk(~bm)); if isnan(lo), lo = mn; end
+        out_btc(i:min(i+k-1,n), j:min(j+k-1,m)) = bm*hi + (~bm)*lo;
+    end
+end
 
-% Read Compressed Image
+% 6.2 Bitplane Coding
+s = zeros(size(img,1), size(img,2), 8);
+for b = 1:8
+    s(:,:,b) = bitget(img, b);
+end
+rec_bitplane = s(:,:,1) + s(:,:,2)*2 + s(:,:,3)*4 + s(:,:,4)*8 + s(:,:,5)*16 + s(:,:,6)*32 + s(:,:,7)*64 + s(:,:,8)*128;
+
+% 6.3 JPEG Quality Compression & Ratio
+imwrite(img,'compressed.jpg','Quality',30);
 comp = imread('compressed.jpg');
+o = dir('lena.jpg');
+c = dir('compressed.jpg');
+ratio = o.bytes / c.bytes;
+fprintf('Compression Ratio = %.2f\\n', ratio);
 
 % Display
 figure;
-subplot(1,2,1), imshow(img), title('Original');
-subplot(1,2,2), imshow(comp), title('Compressed');
-
-% Compression Ratio
-o = dir('lena.png');
-c = dir('compressed.jpg');
-ratio = o.bytes / c.bytes;
-
-fprintf('Compression Ratio = %.2f\\n', ratio);`,
+subplot(2,2,1), imshow(img), title('Original');
+subplot(2,2,2), imshow(uint8(out_btc)), title('BTC Decoded');
+subplot(2,2,3), imshow(uint8(rec_bitplane)), title('Bitplane Recovered');
+subplot(2,2,4), imshow(comp), title('JPEG Compressed (Q=30)');`,
                 workspace: [
-                    { name: 'c', val: '1x1 struct', type: 'struct' },
                     { name: 'comp', val: '512x512 uint8', type: 'uint8' },
                     { name: 'img', val: '512x512 uint8', type: 'uint8' },
-                    { name: 'o', val: '1x1 struct', type: 'struct' },
-                    { name: 'ratio', val: '2.84', type: 'double' }
+                    { name: 'out_btc', val: '512x512 double', type: 'double' },
+                    { name: 'ratio', val: '2.84', type: 'double' },
+                    { name: 'rec_bitplane', val: '512x512 double', type: 'double' }
                 ],
-                simPlots: ["Original", "Compressed (Q=30)"]
+                simPlots: ["Original", "BTC Decoded", "Bitplane Recovered", "JPEG Compressed (Q=30)"]
             },
             7: {
                 name: "PG7.m",
                 title: "# 7. IMAGE SUBTRACTION",
                 aim: "To perform image subtraction (absolute difference) between two images in MATLAB.",
                 procedure: [
-                    "Read two input images ('LENA.JFIF' and 'image.JFIF').",
+                    "Read two input images ('lena.jpg' and 'LENA.jfif').",
                     "Convert both images to grayscale if in RGB format using rgb2gray().",
                     "Resize image 2 to match dimensions of image 1 using imresize(img2, size(img1)).",
                     "Calculate absolute pixel difference using imabsdiff(img1, img2).",
@@ -1323,8 +1364,8 @@ clear;
 close all;
 
 % Read Images
-img1 = imread('LENA.JFIF');
-img2 = imread('image.JFIF');
+img1 = imread('lena.jpg');
+img2 = imread('LENA.jfif');
 
 % Convert to Gray
 if size(img1,3)==3
@@ -1356,57 +1397,66 @@ subplot(1,3,3), imshow(result), title('Subtracted Image');`,
             8: {
                 name: "PG8.m",
                 title: "# 8. BOUNDARY EXTRACTION USING MORPHOLOGY",
-                aim: "To extract boundaries of an image using morphological operations (erosion and subtraction) in MATLAB.",
+                aim: "To extract boundaries of an image using morphological operations (binarization, erosion, and dilation) in MATLAB.",
                 procedure: [
-                    "Read the input image ('LENA.JFIF') and convert to grayscale.",
+                    "Read the input image ('lena.jpg') and convert to grayscale.",
                     "Convert grayscale image to binary using imbinarize().",
                     "Create a flat disk structuring element using strel('disk', 1).",
-                    "Perform morphological erosion on binary image using imerode(bw, se).",
+                    "Perform morphological erosion using imerode(bw, se).",
+                    "Perform morphological dilation using imdilate(bw, se).",
                     "Extract boundaries by subtracting eroded image from binary image (boundary = bw - eroded).",
-                    "Display Original, Binary, and extracted Boundary images."
+                    "Display Original, Binary, Erosion, Dilation, and extracted Boundary images."
                 ],
-                result: "Thus, morphological boundary extraction was successfully performed using erosion and subtraction.",
+                result: "Thus, boundary extraction using binarization, erosion, and dilation was successfully performed.",
                 code: `% # 8. BOUNDARY EXTRACTION USING MORPHOLOGY
 clc;
 clear;
 close all;
 
 % Read Image
-img = imread('LENA.JFIF');
+img = imread('lena.jpg');
 
 % Convert to Gray
 if size(img,3)==3
     img = rgb2gray(img);
 end
 
-% Convert to Binary
+% Binarize the image
 bw = imbinarize(img);
 
-% Morphological Boundary Extraction
+% Create Structuring Element
 se = strel('disk',1);
+
+% Perform erosion and dilation
 eroded = imerode(bw,se);
+dilated = imdilate(bw,se);
+
+% Boundary Extraction
 boundary = bw - eroded;
 
-% Display
+% Display the result
 figure;
-subplot(1,3,1), imshow(img), title('Original');
-subplot(1,3,2), imshow(bw), title('Binary');
-subplot(1,3,3), imshow(boundary), title('Boundary');`,
+subplot(2,3,1), imshow(img), title('Original');
+subplot(2,3,2), imshow(bw), title('Binary');
+subplot(2,3,3), imshow(eroded), title('Erosion');
+subplot(2,3,4), imshow(dilated), title('Dilation');
+subplot(2,3,5), imshow(boundary), title('Boundary Extracted');`,
                 workspace: [
                     { name: 'boundary', val: '512x512 logical', type: 'logical' },
                     { name: 'bw', val: '512x512 logical', type: 'logical' },
+                    { name: 'dilated', val: '512x512 logical', type: 'logical' },
                     { name: 'eroded', val: '512x512 logical', type: 'logical' },
                     { name: 'img', val: '512x512 uint8', type: 'uint8' },
                     { name: 'se', val: '1x1 strel', type: 'strel' }
                 ],
-                simPlots: ["Original", "Binary", "Boundary"]
+                simPlots: ["Original", "Binary", "Erosion", "Dilation", "Boundary Extracted"]
             },
             9: {
                 name: "PG9.m",
                 title: "# 9. IMAGE SEGMENTATION",
                 aim: "To perform image segmentation using thresholding, edge detection (Canny), K-means clustering, and watershed segmentation in MATLAB.",
                 procedure: [
-                    "Read the input image ('lena.png') and convert to grayscale.",
+                    "Read the input image ('lena.jpg') and convert to grayscale.",
                     "Perform global thresholding using graythresh() and imbinarize().",
                     "Perform edge detection using Canny operator edge(grayImage, 'canny').",
                     "Perform K-means clustering segmentation with 3 clusters using imsegkmeans().",
@@ -1420,7 +1470,7 @@ clear;
 close all;
 
 % Read sample image
-img = imread('lena.png');
+img = imread('lena.jpg');
 
 % Convert to grayscale
 if size(img,3) == 3
@@ -1847,6 +1897,613 @@ ylabel('Amplitude');`,
             }
         }
 
+        // ---------- Image Assets & Preloading ----------
+        let lenaImg = new Image();
+        let lenaJfifImg = new Image();
+        let imagesReady = false;
+
+        function preloadLenaImages() {
+            const src1 = (typeof LENA_ASSETS !== 'undefined' && LENA_ASSETS.lena_jpg) ? LENA_ASSETS.lena_jpg : 'lena.jpg';
+            const src2 = (typeof LENA_ASSETS !== 'undefined' && LENA_ASSETS.lena_jfif) ? LENA_ASSETS.lena_jfif : 'LENA.jfif';
+            
+            let loaded = 0;
+            const onDone = () => {
+                loaded++;
+                if (loaded >= 2) imagesReady = true;
+            };
+            lenaImg.onload = onDone;
+            lenaImg.onerror = () => { lenaImg.src = 'lena.jpg'; };
+            lenaImg.src = src1;
+
+            lenaJfifImg.onload = onDone;
+            lenaJfifImg.onerror = () => { lenaJfifImg.src = 'LENA.jfif'; };
+            lenaJfifImg.src = src2;
+        }
+        preloadLenaImages();
+
+        // ---------- MATLAB Simulation Image Processing Engine ----------
+        function renderSimPlot(ctx, title, progIndex) {
+            const w = 170, h = 170;
+            const t = title.toLowerCase();
+
+            // Special case: Camouflage Sine Wave
+            if (isCamouflage || t.includes('sine')) {
+                ctx.fillStyle = '#0a0a0a';
+                ctx.fillRect(0, 0, w, h);
+                ctx.strokeStyle = '#222';
+                ctx.lineWidth = 1;
+                for (let x = 0; x < w; x += 20) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
+                for (let y = 0; y < h; y += 20) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+                ctx.strokeStyle = '#666';
+                ctx.beginPath(); ctx.moveTo(0, h/2); ctx.lineTo(w, h/2); ctx.stroke();
+                ctx.strokeStyle = '#00ff66';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                for (let x = 0; x < w; x++) {
+                    const y = (h/2) - Math.sin((x / w) * Math.PI * 4) * (h * 0.38);
+                    if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+                return;
+            }
+
+            // Pick source image (Image 2 in PG7 uses lenaJfifImg, else lenaImg)
+            const srcImg = (t === 'image 2') ? (lenaJfifImg.complete && lenaJfifImg.naturalWidth ? lenaJfifImg : lenaImg) : lenaImg;
+
+            // Offscreen buffer for pixel sampling
+            const off = document.createElement('canvas');
+            off.width = w; off.height = h;
+            const offCtx = off.getContext('2d');
+
+            if (srcImg.complete && srcImg.naturalWidth > 0) {
+                offCtx.drawImage(srcImg, 0, 0, w, h);
+            } else {
+                const grad = offCtx.createLinearGradient(0, 0, w, h);
+                grad.addColorStop(0, '#e8a87c'); grad.addColorStop(1, '#41b3a3');
+                offCtx.fillStyle = grad;
+                offCtx.fillRect(0, 0, w, h);
+            }
+
+            const imgData = offCtx.getImageData(0, 0, w, h);
+            const d = imgData.data;
+            const total = w * h;
+
+            // Grayscale buffer
+            const gray = new Uint8Array(total);
+            for (let i = 0; i < total; i++) {
+                gray[i] = Math.round(0.2989 * d[i*4] + 0.5870 * d[i*4+1] + 0.1140 * d[i*4+2]);
+            }
+
+            const outData = ctx.createImageData(w, h);
+            const out = outData.data;
+
+            function setGray(i, val) {
+                const v = Math.max(0, Math.min(255, Math.round(val)));
+                out[i*4] = v; out[i*4+1] = v; out[i*4+2] = v; out[i*4+3] = 255;
+            }
+
+            function setRGB(i, r, g, b) {
+                out[i*4] = Math.max(0, Math.min(255, Math.round(r)));
+                out[i*4+1] = Math.max(0, Math.min(255, Math.round(g)));
+                out[i*4+2] = Math.max(0, Math.min(255, Math.round(b)));
+                out[i*4+3] = 255;
+            }
+
+            // 1. Histogram plots (PG2)
+            if (t === 'histogram') {
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, w, h);
+                const hist = new Int32Array(256);
+                for (let i = 0; i < total; i++) hist[gray[i]]++;
+                let maxH = 1;
+                for (let i = 0; i < 256; i++) if (hist[i] > maxH) maxH = hist[i];
+                ctx.strokeStyle = '#999';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(15, 10, w - 25, h - 30);
+                ctx.fillStyle = '#0072bd';
+                const bw = (w - 25) / 256;
+                for (let i = 0; i < 256; i++) {
+                    const bh = (hist[i] / maxH) * (h - 35);
+                    ctx.fillRect(15 + i * bw, h - 20 - bh, Math.max(1, bw), bh);
+                }
+                ctx.fillStyle = '#444';
+                ctx.font = '8px Arial';
+                ctx.fillText('0', 14, h - 8);
+                ctx.fillText('128', (w / 2) - 8, h - 8);
+                ctx.fillText('255', w - 24, h - 8);
+                return;
+            }
+
+            if (t.includes('equalized hist')) {
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, w, h);
+                ctx.strokeStyle = '#999';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(15, 10, w - 25, h - 30);
+                ctx.fillStyle = '#0072bd';
+                const bw = (w - 25) / 256;
+                const baseH = (h - 35) * 0.45;
+                for (let i = 0; i < 256; i++) {
+                    const jitter = Math.sin(i * 0.3) * (baseH * 0.15) + ((i % 5) - 2) * 2;
+                    const bh = Math.max(3, baseH + jitter);
+                    ctx.fillRect(15 + i * bw, h - 20 - bh, Math.max(1, bw), bh);
+                }
+                ctx.fillStyle = '#444';
+                ctx.font = '8px Arial';
+                ctx.fillText('0', 14, h - 8);
+                ctx.fillText('128', (w / 2) - 8, h - 8);
+                ctx.fillText('255', w - 24, h - 8);
+                return;
+            }
+
+            // 2. Original / Image 1 / Image 2
+            if (t === 'original' || t === 'original image' || t === 'image 1' || t === 'image 2') {
+                if (progIndex === 1 || progIndex === 4) {
+                    for (let i = 0; i < total; i++) setRGB(i, d[i*4], d[i*4+1], d[i*4+2]);
+                } else {
+                    for (let i = 0; i < total; i++) setGray(i, gray[i]);
+                }
+                ctx.putImageData(outData, 0, 0);
+                return;
+            }
+
+            // 3. Smoothing / Low-pass
+            if (t.includes('smoothing') || t.includes('low-pass')) {
+                const isColor = (progIndex === 1 || progIndex === 4);
+                for (let y = 0; y < h; y++) {
+                    for (let x = 0; x < w; x++) {
+                        let r = 0, g = 0, b = 0, cnt = 0;
+                        for (let dy = -1; dy <= 1; dy++) {
+                            for (let dx = -1; dx <= 1; dx++) {
+                                const ny = Math.min(h-1, Math.max(0, y + dy));
+                                const nx = Math.min(w-1, Math.max(0, x + dx));
+                                const idx = ny * w + nx;
+                                if (isColor) {
+                                    r += d[idx*4]; g += d[idx*4+1]; b += d[idx*4+2];
+                                } else {
+                                    r += gray[idx];
+                                }
+                                cnt++;
+                            }
+                        }
+                        const cur = y * w + x;
+                        if (isColor) setRGB(cur, r/cnt, g/cnt, b/cnt);
+                        else setGray(cur, r/cnt);
+                    }
+                }
+                ctx.putImageData(outData, 0, 0);
+                return;
+            }
+
+            // 4. Sharpening / Sharpen
+            if (t.includes('sharpening') || t === 'sharpen') {
+                const isColor = (progIndex === 1 || progIndex === 4);
+                for (let y = 0; y < h; y++) {
+                    for (let x = 0; x < w; x++) {
+                        const cur = y * w + x;
+                        const up = Math.max(0, y-1) * w + x;
+                        const dn = Math.min(h-1, y+1) * w + x;
+                        const lf = y * w + Math.max(0, x-1);
+                        const rt = y * w + Math.min(w-1, x+1);
+                        if (isColor) {
+                            const r = 5*d[cur*4] - d[up*4] - d[dn*4] - d[lf*4] - d[rt*4];
+                            const g = 5*d[cur*4+1] - d[up*4+1] - d[dn*4+1] - d[lf*4+1] - d[rt*4+1];
+                            const b = 5*d[cur*4+2] - d[up*4+2] - d[dn*4+2] - d[lf*4+2] - d[rt*4+2];
+                            setRGB(cur, r, g, b);
+                        } else {
+                            const v = 5*gray[cur] - gray[up] - gray[dn] - gray[lf] - gray[rt];
+                            setGray(cur, v);
+                        }
+                    }
+                }
+                ctx.putImageData(outData, 0, 0);
+                return;
+            }
+
+            // 5. Contrast Stretching
+            if (t.includes('contrast')) {
+                const sorted = Array.from(gray).sort((a,b)=>a-b);
+                const low = sorted[Math.floor(total * 0.05)];
+                const high = sorted[Math.floor(total * 0.95)] || 255;
+                const range = high - low || 1;
+                for (let i = 0; i < total; i++) {
+                    const r = (d[i*4] - low) * (255 / range);
+                    const g = (d[i*4+1] - low) * (255 / range);
+                    const b = (d[i*4+2] - low) * (255 / range);
+                    setRGB(i, r, g, b);
+                }
+                ctx.putImageData(outData, 0, 0);
+                return;
+            }
+
+            // 6. Gamma Correction
+            if (t.includes('gamma')) {
+                for (let i = 0; i < total; i++) {
+                    const r = 255 * Math.pow(d[i*4] / 255, 0.7);
+                    const g = 255 * Math.pow(d[i*4+1] / 255, 0.7);
+                    const b = 255 * Math.pow(d[i*4+2] / 255, 0.7);
+                    setRGB(i, r, g, b);
+                }
+                ctx.putImageData(outData, 0, 0);
+                return;
+            }
+
+            // 7. Sigmoidal Function
+            if (t.includes('sigmoid')) {
+                for (let i = 0; i < total; i++) {
+                    const r = 255 / (1 + Math.exp(5 * (0.5 - d[i*4] / 255)));
+                    const g = 255 / (1 + Math.exp(5 * (0.5 - d[i*4+1] / 255)));
+                    const b = 255 / (1 + Math.exp(5 * (0.5 - d[i*4+2] / 255)));
+                    setRGB(i, r, g, b);
+                }
+                ctx.putImageData(outData, 0, 0);
+                return;
+            }
+
+            // 8. Global Equalization
+            if (t.includes('equalized') && !t.includes('local')) {
+                const hist = new Int32Array(256);
+                for (let i = 0; i < total; i++) hist[gray[i]]++;
+                const cdf = new Int32Array(256);
+                cdf[0] = hist[0];
+                for (let i = 1; i < 256; i++) cdf[i] = cdf[i-1] + hist[i];
+                let cdfMin = 0;
+                for (let i = 0; i < 256; i++) if (cdf[i] > 0) { cdfMin = cdf[i]; break; }
+                const map = new Uint8Array(256);
+                for (let i = 0; i < 256; i++) {
+                    map[i] = Math.round(((cdf[i] - cdfMin) / (total - cdfMin)) * 255);
+                }
+                for (let i = 0; i < total; i++) setGray(i, map[gray[i]]);
+                ctx.putImageData(outData, 0, 0);
+                return;
+            }
+
+            // 9. Histogram Matched
+            if (t.includes('matched')) {
+                for (let i = 0; i < total; i++) {
+                    const g = gray[i];
+                    const val = g < 120 ? g * 0.8 : 96 + (g - 120) * 1.18;
+                    setGray(i, val);
+                }
+                ctx.putImageData(outData, 0, 0);
+                return;
+            }
+
+            // 10. Local Equalized (adapthisteq)
+            if (t.includes('local equalized')) {
+                const tileSize = 20;
+                for (let by = 0; by < h; by += tileSize) {
+                    for (let bx = 0; bx < w; bx += tileSize) {
+                        const tileH = Math.min(tileSize, h - by);
+                        const tileW = Math.min(tileSize, w - bx);
+                        const tHist = new Int32Array(256);
+                        for (let dy = 0; dy < tileH; dy++) {
+                            for (let dx = 0; dx < tileW; dx++) {
+                                tHist[gray[(by + dy) * w + (bx + dx)]]++;
+                            }
+                        }
+                        const tCdf = new Int32Array(256);
+                        tCdf[0] = tHist[0];
+                        for (let i = 1; i < 256; i++) tCdf[i] = tCdf[i-1] + tHist[i];
+                        const tTotal = tileW * tileH;
+                        let tMin = 0;
+                        for (let i = 0; i < 256; i++) if (tCdf[i] > 0) { tMin = tCdf[i]; break; }
+                        for (let dy = 0; dy < tileH; dy++) {
+                            for (let dx = 0; dx < tileW; dx++) {
+                                const idx = (by + dy) * w + (bx + dx);
+                                const v = tCdf[gray[idx]];
+                                setGray(idx, Math.round(((v - tMin) / (tTotal - tMin || 1)) * 255));
+                            }
+                        }
+                    }
+                }
+                ctx.putImageData(outData, 0, 0);
+                return;
+            }
+
+            // 11. Degraded + Noise (PG3)
+            if (t.includes('degraded') || t.includes('noise')) {
+                for (let y = 0; y < h; y++) {
+                    for (let x = 0; x < w; x++) {
+                        let sum = 0;
+                        for (let s = 0; s < 7; s++) {
+                            const nx = Math.min(w-1, x + s);
+                            const ny = Math.min(h-1, y + s);
+                            sum += gray[ny * w + nx];
+                        }
+                        const noise = (Math.random() - 0.5) * 45;
+                        setGray(y * w + x, (sum / 7) + noise);
+                    }
+                }
+                ctx.putImageData(outData, 0, 0);
+                return;
+            }
+
+            // 12. Restored (PG3)
+            if (t.includes('restored')) {
+                for (let i = 0; i < total; i++) setGray(i, gray[i] * 1.02);
+                ctx.putImageData(outData, 0, 0);
+                return;
+            }
+
+            // 13. High-pass (PG4)
+            if (t.includes('high-pass')) {
+                for (let y = 1; y < h - 1; y++) {
+                    for (let x = 1; x < w - 1; x++) {
+                        const cur = y * w + x;
+                        const v = 8 * gray[cur]
+                            - gray[(y-1)*w + (x-1)] - gray[(y-1)*w + x] - gray[(y-1)*w + (x+1)]
+                            - gray[y*w + (x-1)] - gray[y*w + (x+1)]
+                            - gray[(y+1)*w + (x-1)] - gray[(y+1)*w + x] - gray[(y+1)*w + (x+1)];
+                        setGray(cur, Math.abs(v));
+                    }
+                }
+                ctx.putImageData(outData, 0, 0);
+                return;
+            }
+
+            // 14. Median (PG4)
+            if (t.includes('median')) {
+                const arr = new Uint8Array(9);
+                for (let y = 1; y < h - 1; y++) {
+                    for (let x = 1; x < w - 1; x++) {
+                        let k = 0;
+                        for (let dy = -1; dy <= 1; dy++) {
+                            for (let dx = -1; dx <= 1; dx++) {
+                                arr[k++] = gray[(y + dy) * w + (x + dx)];
+                            }
+                        }
+                        arr.sort();
+                        setGray(y * w + x, arr[4]);
+                    }
+                }
+                ctx.putImageData(outData, 0, 0);
+                return;
+            }
+
+            // 15. Gaussian (PG4)
+            if (t.includes('gaussian')) {
+                for (let y = 2; y < h - 2; y++) {
+                    for (let x = 2; x < w - 2; x++) {
+                        let sum = 0;
+                        for (let dy = -2; dy <= 2; dy++) {
+                            for (let dx = -2; dx <= 2; dx++) {
+                                const wgt = Math.exp(-(dx*dx + dy*dy) / 4);
+                                sum += gray[(y + dy) * w + (x + dx)] * wgt;
+                            }
+                        }
+                        setGray(y * w + x, sum / 6.28);
+                    }
+                }
+                ctx.putImageData(outData, 0, 0);
+                return;
+            }
+
+            // 16. Edge detection (PG5, PG9)
+            if (t.includes('sobel') || t.includes('canny') || t.includes('prewitt') || t === 'edge detection') {
+                const isManual = t.includes('without') || t.includes('manual');
+                const isPrewitt = t.includes('prewitt');
+                const isCanny = t.includes('canny') || t === 'edge detection';
+
+                for (let y = 1; y < h - 1; y++) {
+                    for (let x = 1; x < w - 1; x++) {
+                        const p00 = gray[(y-1)*w + (x-1)], p01 = gray[(y-1)*w + x], p02 = gray[(y-1)*w + (x+1)];
+                        const p10 = gray[y*w + (x-1)],                         p12 = gray[y*w + (x+1)];
+                        const p20 = gray[(y+1)*w + (x-1)], p21 = gray[(y+1)*w + x], p22 = gray[(y+1)*w + (x+1)];
+
+                        let gx, gy;
+                        if (isPrewitt) {
+                            gx = (-1*p00) + (1*p02) + (-1*p10) + (1*p12) + (-1*p20) + (1*p22);
+                            gy = (-1*p00) + (-1*p01) + (-1*p02) + (1*p20) + (1*p21) + (1*p22);
+                        } else {
+                            gx = (-1*p00) + (1*p02) + (-2*p10) + (2*p12) + (-1*p20) + (1*p22);
+                            gy = (-1*p00) + (-2*p01) + (-1*p02) + (1*p20) + (2*p21) + (1*p22);
+                        }
+                        const mag = Math.hypot(gx, gy);
+                        const cur = y * w + x;
+                        if (isManual) setGray(cur, mag);
+                        else if (isCanny) setGray(cur, mag > 45 ? 255 : 0);
+                        else setGray(cur, mag > 65 ? 255 : 0);
+                    }
+                }
+                ctx.putImageData(outData, 0, 0);
+                return;
+            }
+
+            // 17. Morphology: Binary, Erosion, Dilation, Boundary (PG8, PG5, PG9)
+            if (t.includes('binary') || t.includes('thresholding')) {
+                for (let i = 0; i < total; i++) setGray(i, gray[i] >= 115 ? 255 : 0);
+                ctx.putImageData(outData, 0, 0);
+                return;
+            }
+
+            if (t.includes('erosion')) {
+                for (let y = 1; y < h - 1; y++) {
+                    for (let x = 1; x < w - 1; x++) {
+                        let minV = 255;
+                        for (let dy = -1; dy <= 1; dy++) {
+                            for (let dx = -1; dx <= 1; dx++) {
+                                const v = gray[(y + dy) * w + (x + dx)] >= 115 ? 255 : 0;
+                                if (v < minV) minV = v;
+                            }
+                        }
+                        setGray(y * w + x, minV);
+                    }
+                }
+                ctx.putImageData(outData, 0, 0);
+                return;
+            }
+
+            if (t.includes('dilation')) {
+                for (let y = 1; y < h - 1; y++) {
+                    for (let x = 1; x < w - 1; x++) {
+                        let maxV = 0;
+                        for (let dy = -1; dy <= 1; dy++) {
+                            for (let dx = -1; dx <= 1; dx++) {
+                                const v = gray[(y + dy) * w + (x + dx)] >= 115 ? 255 : 0;
+                                if (v > maxV) maxV = v;
+                            }
+                        }
+                        setGray(y * w + x, maxV);
+                    }
+                }
+                ctx.putImageData(outData, 0, 0);
+                return;
+            }
+
+            if (t.includes('boundary')) {
+                for (let y = 1; y < h - 1; y++) {
+                    for (let x = 1; x < w - 1; x++) {
+                        const curV = gray[y * w + x] >= 115 ? 255 : 0;
+                        let minV = 255;
+                        for (let dy = -1; dy <= 1; dy++) {
+                            for (let dx = -1; dx <= 1; dx++) {
+                                const v = gray[(y + dy) * w + (x + dx)] >= 115 ? 255 : 0;
+                                if (v < minV) minV = v;
+                            }
+                        }
+                        setGray(y * w + x, curV > minV ? 255 : 0);
+                    }
+                }
+                ctx.putImageData(outData, 0, 0);
+                return;
+            }
+
+            // 18. BTC Decoded (PG6)
+            if (t.includes('btc')) {
+                const k = 4;
+                for (let by = 0; by < h; by += k) {
+                    for (let bx = 0; bx < w; bx += k) {
+                        let sum = 0, count = 0;
+                        for (let dy = 0; dy < k && by + dy < h; dy++) {
+                            for (let dx = 0; dx < k && bx + dx < w; dx++) {
+                                sum += gray[(by + dy) * w + (bx + dx)];
+                                count++;
+                            }
+                        }
+                        const mean = sum / count;
+                        let sHi = 0, cHi = 0, sLo = 0, cLo = 0;
+                        for (let dy = 0; dy < k && by + dy < h; dy++) {
+                            for (let dx = 0; dx < k && bx + dx < w; dx++) {
+                                const v = gray[(by + dy) * w + (bx + dx)];
+                                if (v >= mean) { sHi += v; cHi++; } else { sLo += v; cLo++; }
+                            }
+                        }
+                        const hi = cHi > 0 ? sHi / cHi : mean;
+                        const lo = cLo > 0 ? sLo / cLo : mean;
+                        for (let dy = 0; dy < k && by + dy < h; dy++) {
+                            for (let dx = 0; dx < k && bx + dx < w; dx++) {
+                                const idx = (by + dy) * w + (bx + dx);
+                                setGray(idx, gray[idx] >= mean ? hi : lo);
+                            }
+                        }
+                    }
+                }
+                ctx.putImageData(outData, 0, 0);
+                return;
+            }
+
+            // 19. Bitplane Recovered (PG6)
+            if (t.includes('bitplane')) {
+                for (let i = 0; i < total; i++) {
+                    const g = gray[i];
+                    setGray(i, g & 0xF0);
+                }
+                ctx.putImageData(outData, 0, 0);
+                return;
+            }
+
+            // 20. JPEG Compressed (PG6)
+            if (t.includes('jpeg') || t.includes('compressed')) {
+                const bs = 8;
+                for (let by = 0; by < h; by += bs) {
+                    for (let bx = 0; bx < w; bx += bs) {
+                        let sum = 0, count = 0;
+                        for (let dy = 0; dy < bs && by + dy < h; dy++) {
+                            for (let dx = 0; dx < bs && bx + dx < w; dx++) {
+                                sum += gray[(by + dy) * w + (bx + dx)];
+                                count++;
+                            }
+                        }
+                        const avg = sum / count;
+                        for (let dy = 0; dy < bs && by + dy < h; dy++) {
+                            for (let dx = 0; dx < bs && bx + dx < w; dx++) {
+                                const idx = (by + dy) * w + (bx + dx);
+                                const qv = Math.round(gray[idx] / 18) * 18;
+                                const isEdge = (dy === 0 || dx === 0);
+                                setGray(idx, isEdge ? qv * 0.95 : qv);
+                            }
+                        }
+                    }
+                }
+                ctx.putImageData(outData, 0, 0);
+                return;
+            }
+
+            // 21. Subtracted Image (PG7)
+            if (t.includes('subtracted')) {
+                const off2 = document.createElement('canvas');
+                off2.width = w; off2.height = h;
+                const off2Ctx = off2.getContext('2d');
+                if (lenaJfifImg.complete && lenaJfifImg.naturalWidth > 0) {
+                    off2Ctx.drawImage(lenaJfifImg, 0, 0, w, h);
+                } else {
+                    off2Ctx.drawImage(lenaImg, 2, 2, w, h);
+                }
+                const d2 = off2Ctx.getImageData(0, 0, w, h).data;
+                for (let i = 0; i < total; i++) {
+                    const g1 = gray[i];
+                    const g2 = Math.round(0.2989 * d2[i*4] + 0.5870 * d2[i*4+1] + 0.1140 * d2[i*4+2]);
+                    const diff = Math.abs(g1 - g2) * 4;
+                    setGray(i, diff);
+                }
+                ctx.putImageData(outData, 0, 0);
+                return;
+            }
+
+            // 22. K-means Clustering (PG9)
+            if (t.includes('k-means')) {
+                for (let i = 0; i < total; i++) {
+                    const g = gray[i];
+                    if (g < 85) setRGB(i, 40, 60, 160);
+                    else if (g < 170) setRGB(i, 40, 180, 100);
+                    else setRGB(i, 230, 200, 50);
+                }
+                ctx.putImageData(outData, 0, 0);
+                return;
+            }
+
+            // 23. Watershed Segmentation (PG9)
+            if (t.includes('watershed')) {
+                for (let y = 1; y < h - 1; y++) {
+                    for (let x = 1; x < w - 1; x++) {
+                        const cur = y * w + x;
+                        const gx = gray[y*w + (x+1)] - gray[y*w + (x-1)];
+                        const gy = gray[(y+1)*w + x] - gray[(y-1)*w + x];
+                        const grad = Math.hypot(gx, gy);
+
+                        if (grad > 55) {
+                            setRGB(cur, 0, 0, 0);
+                        } else {
+                            const basin = ((Math.floor(y / 15) * 7 + Math.floor(x / 15) * 11) % 6);
+                            if (basin === 0) setRGB(cur, 0, 0, 180);
+                            else if (basin === 1) setRGB(cur, 0, 160, 220);
+                            else if (basin === 2) setRGB(cur, 20, 200, 80);
+                            else if (basin === 3) setRGB(cur, 240, 220, 30);
+                            else if (basin === 4) setRGB(cur, 230, 80, 20);
+                            else setRGB(cur, 160, 20, 40);
+                        }
+                    }
+                }
+                ctx.putImageData(outData, 0, 0);
+                return;
+            }
+
+            // Fallback: grayscale
+            for (let i = 0; i < total; i++) setGray(i, gray[i]);
+            ctx.putImageData(outData, 0, 0);
+        }
+
         // ---------- Run ----------
         function runSimulation() {
             const p = isCamouflage ? camouflageProgram : programs[currentProgramIndex];
@@ -1866,28 +2523,10 @@ ylabel('Amplitude');`,
                 cell.className = 'fig-box';
                 cell.innerHTML = `
                     <div class="fig-box-title">${title}</div>
-                    <canvas width="170" height="170" style="background:#111; border:1px solid #888;"></canvas>
+                    <canvas width="170" height="170" style="background:#000; border:1px solid #777;"></canvas>
                 `;
                 const ctx = cell.querySelector('canvas').getContext('2d');
-                ctx.fillStyle = '#222';
-                ctx.fillRect(0, 0, 170, 170);
-                ctx.fillStyle = '#ddd';
-                ctx.beginPath();
-                ctx.arc(85, 85, 52, 0, Math.PI * 2);
-                ctx.fill();
-
-                const t = title.toLowerCase();
-                if (t.includes('edge') || t.includes('sobel') || t.includes('boundary')) {
-                    ctx.strokeStyle = '#fff';
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    ctx.arc(85, 85, 52, 0, Math.PI * 2);
-                    ctx.stroke();
-                    ctx.fillStyle = '#000';
-                    ctx.beginPath();
-                    ctx.arc(85, 85, 50, 0, Math.PI * 2);
-                    ctx.fill();
-                }
+                renderSimPlot(ctx, title, currentProgramIndex);
                 grid.appendChild(cell);
             });
 

@@ -4,7 +4,7 @@ clear;
 close all;
 
 % Read sample image
-img = imread('lena.png');
+img = imread('lena.jpg');
 
 % Convert to grayscale
 if size(img,3) == 3

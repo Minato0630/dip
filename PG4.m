@@ -4,7 +4,7 @@ clear;
 close all;
 
 % Read RGB image
-img = imread('lena.png');
+img = imread('lena.jpg');
 
 % Low-pass
 low = imfilter(img,fspecial('average',[3 3]));
