@@ -20,8 +20,12 @@ med(:,:,3) = medfilt2(img(:,:,3));
 % Sharpen
 sharp = imsharpen(img);
 
-% Gaussian
-gauss = imgaussfilt(img,2);
+% Gaussian (Compatible with MATLAB 2018 and all versions)
+if exist('imgaussfilt', 'file')
+    gauss = imgaussfilt(img,2);
+else
+    gauss = imfilter(img, fspecial('gaussian', [5 5], 2));
+end
 
 % Display
 subplot(2,3,1), imshow(img), title('Original');

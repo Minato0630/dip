@@ -451,19 +451,39 @@ subplot(1,3,3), imshow(result), title('Subtracted Image (imabsdiff)');
 #### **MATLAB Code:**
 ```matlab
 clc; clear; close all;
-img = imread('lena.png');
+img = imread('lena.jpg');
 if size(img,3)==3, grayImage = rgb2gray(img); else, grayImage = img; end
 
 % 1. Thresholding (Otsu)
 level = graythresh(grayImage);
-binaryImage = imbinarize(grayImage, level);
+if exist('imbinarize', 'file')
+    binaryImage = imbinarize(grayImage, level);
+else
+    binaryImage = im2bw(grayImage, level);
+end
 
 % 2. Edge Detection (Canny)
 edges = edge(grayImage, 'canny');
 
-% 3. K-means Clustering (K=3)
+% 3. K-means Clustering (K=3) - Compatible with MATLAB 2018 and all versions
 numClusters = 3;
-[clusterIdx, ~] = imsegkmeans(grayImage, numClusters);
+if exist('imsegkmeans', 'file')
+    clusterIdx = imsegkmeans(grayImage, numClusters);
+elseif exist('kmeans', 'file')
+    data = double(grayImage(:));
+    [idx, ~] = kmeans(data, numClusters, 'MaxIter', 100);
+    clusterIdx = reshape(idx, size(grayImage));
+else
+    data = double(grayImage(:));
+    centers = linspace(min(data), max(data), numClusters)';
+    for iter = 1:15
+        [~, idx] = min(abs(data - centers'), [], 2);
+        for c = 1:numClusters
+            if any(idx == c), centers(c) = mean(data(idx == c)); end
+        end
+    end
+    clusterIdx = reshape(idx, size(grayImage));
+end
 clusteredImage = label2rgb(clusterIdx);
 
 % 4. Watershed Segmentation
@@ -535,7 +555,9 @@ imshow(watershedRGB), title('Watershed Segmentation');
     - It iterates over all possible thresholds $t \in [0, 255]$ and selects the threshold that maximizes between-class variance $\sigma_B^2(t)$ (equivalent to minimizing within-class variance). In MATLAB: `level = graythresh(img);`.
 
 14. **How does K-means clustering segment an image?**
-    - It assigns each pixel to the nearest of $K$ cluster centroids, recalculates centroids as the mean of assigned pixels, and repeats until convergence. In MATLAB: `[clusterIdx, centers] = imsegkmeans(img, K);`.
+    - It groups pixels into $K$ intensity clusters by iteratively minimizing the distance between pixels and cluster centroids.
+    - **In MATLAB R2018 and all versions:** Flatten image to 1D vector and run `[idx, ~] = kmeans(double(img(:)), K); clusterIdx = reshape(idx, size(img));`.
+    - **In MATLAB R2019+:** Direct function `[clusterIdx, centers] = imsegkmeans(img, K);` is also available.
 
 15. **What is the Watershed Segmentation algorithm?**
     - It views the gradient magnitude image as a 3D topographic relief map where pixel values are altitudes. Water rising from local minima fills catchment basins. Dams built where basins meet form watershed division lines.

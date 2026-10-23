@@ -11,8 +11,12 @@ if size(img,3)==3
     img = rgb2gray(img);
 end
 
-% Binarize the image
-bw = imbinarize(img);
+% Binarize the image (Compatible with MATLAB 2018 and all versions)
+if exist('imbinarize', 'file')
+    bw = imbinarize(img);
+else
+    bw = im2bw(img, graythresh(img));
+end
 
 % Create Structuring Element
 se = strel('disk',1);
